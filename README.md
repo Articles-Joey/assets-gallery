@@ -1,6 +1,6 @@
 # Assets Gallery
 
-![Splash Image](public/img/splash.webp)
+![Splash Image](public/img/game-preview.gif)
 
 Online gallery build with Three.js and React Three Fiber. View images and models submitted via a website inside a 3D space with the ability to walk around.
 
