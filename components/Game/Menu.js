@@ -33,6 +33,7 @@ const Menu = ({
     const setControlType = useAssetGalleryStore((state) => state.setControlType);
     const galleryTheme = useAssetGalleryStore((state) => state.galleryTheme);
     const setGalleryTheme = useAssetGalleryStore((state) => state.setGalleryTheme);
+
     const music = useAssetGalleryStore((state) => state.music);
     const setMusic = useAssetGalleryStore((state) => state.setMusic);
 
@@ -106,7 +107,7 @@ const Menu = ({
                                 onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
-                                    setGalleryTheme(theme)
+                                    setMusic(!music)
                                 }}
                             >
                                 {theme}
