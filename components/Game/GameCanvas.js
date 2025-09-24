@@ -71,11 +71,13 @@ function AssetSectionImageAsset(props) {
         <group>
 
             <mesh {...props}>
+
                 <boxGeometry args={props.testArgs || [0.95, 0.75, 0.12]} />
                 <meshStandardMaterial
                     color={props.color || "#fff"}
                 />
-                <Html
+
+                {true && <Html
                     style={{
                         transition: 'all 0.2s',
                         opacity: hidden ? 0 : 1,
@@ -91,7 +93,8 @@ function AssetSectionImageAsset(props) {
                 >
                     <div className="w-100 h-100">{props.html}</div>
                     {/* <Slider style={{ width: 100 }} min={0.5} max={1} step={0.01} value={size} onChange={set} /> */}
-                </Html>
+                </Html>}
+
             </mesh>
 
         </group>
@@ -192,10 +195,7 @@ function AssetSections(props) {
 
     const { data: assets, isLoading: assetsIsLoading, mutate: mutateAssets } = useAssets()
 
-    const {
-        galleryTheme,
-        setGalleryTheme
-    } = useAssetGalleryStore()
+    const galleryTheme = useAssetGalleryStore(state => state.galleryTheme);
 
     // const { assets, galleryTheme } = props;
 
@@ -203,7 +203,7 @@ function AssetSections(props) {
         return assets?.map((asset_obj, i) => (
             <group
                 key={asset_obj._id}
-                position={[0, 0, (2 * -i)]}
+                position={[0, 0, (3 * -i)]}
             >
 
                 {asset_obj.asset_type == "Image" &&
@@ -274,17 +274,17 @@ function AssetSections(props) {
                 }
 
                 {(galleryTheme == 'Alley') &&
-                    <group position={[0, 0, 0]}>
+                    <group position={[1, 0, 0]}>
 
                         <Alley
-                            scale={0.15}
+                            scale={0.08}
                             position={[0.6, -0.95, 0]}
                             rotation={[0, Math.PI / 1, 0]}
                         // zIndexRange={2}
                         />
                         <Alley
-                            scale={0.15}
-                            position={[-0.6, -0.95, 0]}
+                            scale={0.08}
+                            position={[-2.5, -0.95, 0]}
                         // zIndexRange={2}
                         />
 
@@ -397,13 +397,11 @@ function GameCanvas({
     menuOpen
 }) {
 
-    const {
-        controlType,
-        galleryTheme,
-        setGalleryTheme,
-        music,
-        setMusic
-    } = useAssetGalleryStore()
+    const controlType = useAssetGalleryStore(state => state.controlType);
+    const galleryTheme = useAssetGalleryStore(state => state.galleryTheme);
+    // const setGalleryTheme = useAssetGalleryStore(state => state.setGalleryTheme);
+    const music = useAssetGalleryStore(state => state.music);
+    // const setMusic = useAssetGalleryStore(state => state.setMusic);
 
     useEffect(() => {
 
@@ -509,7 +507,7 @@ function GameCanvas({
 
                 <Sky sunPosition={[100, 100, 20]} />
 
-                <ambientLight intensity={1} />
+                <ambientLight intensity={1.5} />
 
                 {controlType == "Mouse and Keyboard" &&
                     <FPV

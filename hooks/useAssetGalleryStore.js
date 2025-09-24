@@ -8,6 +8,13 @@ const setLocalStorage = (key, value) => window.localStorage.setItem(key, JSON.st
 
 export const useAssetGalleryStore = create((set) => ({
 
+    useFallback: false,
+    setUseFallback: (newValue) => {
+        set((prev) => ({
+            useFallback: newValue
+        }))
+    },
+
     // Mouse and Keyboard
     // Touch
     controlType: "Mouse and Keyboard",

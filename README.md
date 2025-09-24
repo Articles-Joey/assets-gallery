@@ -14,4 +14,11 @@ npm run dev
 
 ## Multiplayer
 
-Aiming to have multiplayer via P2P and Websockets. Websocket backend code is not in this repo or available at this time. P2P code will be included here.
+Might do simple multiplayer peer to peer in the future.
+
+## Attributions
+
+[Easel Icon - Flaticon](https://www.flaticon.com/free-icon/easel_2784489)  
+[Alley Model](https://sketchfab.com/3d-models/alley-c463c94475644aeda18bc3ae95b08d2b)  
+[Modern Bench](https://sketchfab.com/3d-models/modern-bench-1-caa4515e36444e4c8c100296463e83c1#download)  
+[Park Bench](https://sketchfab.com/3d-models/lowpoly-park-bench-game-asset-34b84238f27f4407b65fe03a8774c574#download)

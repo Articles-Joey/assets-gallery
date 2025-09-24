@@ -7,6 +7,20 @@ import { Dropdown, DropdownButton } from 'react-bootstrap';
 import Link from 'next/link';
 // import routes from '@/components/constants/routes';
 
+function PlayerPosition() {
+    const position = useAssetGalleryStore((state) => state.position);
+
+    return (
+        <small>
+            <span>X: {position[0].toFixed(2)}</span>
+            <span> - </span>
+            <span>Y: {position[1].toFixed(2)}</span>
+            <span> - </span>
+            <span>Z: {position[2].toFixed(2)}</span>
+        </small>
+    )
+}
+
 const Menu = ({
     isFullscreen,
     requestFullscreen,
@@ -15,16 +29,12 @@ const Menu = ({
     reloadScene
 }) => {
 
-    const {
-        controlType,
-        setControlType,
-        galleryTheme,
-        setGalleryTheme,
-        music,
-        setMusic
-    } = useAssetGalleryStore()
-
-    const position = useAssetGalleryStore((state) => state.position);
+    const controlType = useAssetGalleryStore((state) => state.controlType);
+    const setControlType = useAssetGalleryStore((state) => state.setControlType);
+    const galleryTheme = useAssetGalleryStore((state) => state.galleryTheme);
+    const setGalleryTheme = useAssetGalleryStore((state) => state.setGalleryTheme);
+    const music = useAssetGalleryStore((state) => state.music);
+    const setMusic = useAssetGalleryStore((state) => state.setMusic);
 
     // const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
 
@@ -124,13 +134,7 @@ const Menu = ({
                             {galleryTheme}
                         </div>
 
-                        <small>
-                            <span>X: {position[0].toFixed(2)}</span>
-                            <span> - </span>
-                            <span>Y: {position[1].toFixed(2)}</span>
-                            <span> - </span>
-                            <span>Z: {position[2].toFixed(2)}</span>
-                        </small>
+                        <PlayerPosition />
                     </div>
 
                     <div className='mb-0 p-1 d-flex'>

@@ -6,10 +6,14 @@ Source: https://sketchfab.com/3d-models/vr-modern-gallery-room-499f13ada6234cb8a
 Title: VR Modern Gallery Room
 */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Cylinder, SpotLight, useDepthBuffer, useGLTF } from "@react-three/drei";
-import { Vector3 } from "three";
+// import { Vector3 } from "three";
+import { Vector3, NearestFilter, TextureLoader, RepeatWrapping } from 'three'
 import { useFrame, useThree } from "@react-three/fiber";
+import { degToRad } from "three/src/math/MathUtils";
+import ModelModernBench from "../Models/ModernBench";
+import { ModelParkBench } from "../Models/ParkBench";
 
 function MySpotlight() {
     const lightRef = useRef();
@@ -75,6 +79,26 @@ export default function Model(props) {
 
     const depthBuffer = useDepthBuffer({ frames: 1 })
 
+    const [groundTexture, setGroundTexture] = useState(null);
+    useEffect(() => {
+        const loader = new TextureLoader();
+        const texture = loader.load(
+            `/img/plazz_tile.png`
+        );
+
+        texture.magFilter = NearestFilter;
+        texture.wrapS = RepeatWrapping;
+        texture.wrapT = RepeatWrapping;
+        texture.repeat.set(15, 5);
+
+        setGroundTexture(texture);
+
+        // Cleanup the texture to avoid memory leaks
+        return () => {
+            texture.dispose();
+        };
+    }, []);
+
     return (
         <group {...props} dispose={null}>
 
@@ -83,21 +107,23 @@ export default function Model(props) {
                 position={[0, 0, 0]}
             >
                 {[-1, 1].map((sign) => (
-                    <>
+                    <group key={sign}>
+
                         <Box
-                            args={[0.25, 0.25, 2]}
+                            args={[0.25, 0.25, 3]}
                             rotation={[0, 0, 0]}
                             position={[5 * sign, -0.4, 0]}
                         >
                             <meshStandardMaterial color="black" transparent opacity={1} />
                         </Box>
                         <Box
-                            args={[0.25, 0.25, 2]}
+                            args={[0.25, 0.25, 3]}
                             rotation={[0, 0, 0]}
                             position={[5 * sign, 2.25, 0]}
                         >
                             <meshStandardMaterial color="black" transparent opacity={1} />
                         </Box>
+
                         <Box
                             args={[0.25, 5.25, 2]}
                             rotation={[0, 0, 0]}
@@ -105,7 +131,56 @@ export default function Model(props) {
                         >
                             <meshStandardMaterial color="lightgray" transparent opacity={1} />
                         </Box>
-                    </>
+
+                        {/* Side Windows */}
+                        <mesh
+                            rotation={[0, degToRad(90), 0]}
+                            position={[-5, 0.5, 1.5]}
+                        >
+                            <planeGeometry
+                                args={[1, 3.5]}
+                            />
+                            <meshStandardMaterial
+                                color="cyan"
+                                transparent={true}
+                                opacity={0.25}
+                            />
+                        </mesh>
+                        <mesh
+                            rotation={[0, degToRad(-90), 0]}
+                            position={[5, 0.5, 1.5]}
+                        >
+                            <planeGeometry
+                                args={[1, 3.5]}
+                            />
+                            <meshStandardMaterial
+                                color="cyan"
+                                transparent={true}
+                                opacity={0.25}
+                            />
+                        </mesh>
+
+                        {/* Roof Windows */}
+                        <group
+                            // position={[0, 4.5, 0]}
+                            rotation={[0, 0, degToRad(90)]}
+                        >
+                            <mesh
+                                rotation={[0, degToRad(-90), 0]}
+                                position={[2.4, 0, 1.5]}
+                            >
+                                <planeGeometry
+                                    args={[1, 10]}
+                                />
+                                <meshStandardMaterial
+                                    color="cyan"
+                                    transparent={true}
+                                    opacity={0.25}
+                                />
+                            </mesh>
+                        </group>
+
+                    </group>
                 ))}
 
                 <Box
@@ -118,7 +193,7 @@ export default function Model(props) {
 
                 {/* Light Rail */}
                 <Box
-                    args={[0.25, .25, 2]}
+                    args={[0.25, .25, 3]}
                     rotation={[0, 0, 0]}
                     position={[0, 2.25, 0]}
                 >
@@ -128,7 +203,14 @@ export default function Model(props) {
                 {/* Bench */}
                 {section_i && section_i % 2 !== 0 && (
                     <group>
-                        <Box
+                        {/* <ModelModernBench 
+                            position={[0, -0.4, 0]}
+                        /> */}
+                        <ModelParkBench
+                            position={[0, -0.4, 1]}
+                            scale={1.15}
+                        />
+                        {/* <Box
                             args={[0.75, .25, 1.5]}
                             rotation={[0, 0, 0]}
                             position={[0, -0.25, 0]}
@@ -141,9 +223,21 @@ export default function Model(props) {
                             position={[0, 0.075, 0]}
                         >
                             <meshStandardMaterial color="black" transparent opacity={1} />
-                        </Box>
+                        </Box> */}
                     </group>
                 )}
+
+                {/* Floor */}
+                <mesh
+                    // args={[0.25, .25, 2]}
+                    rotation={[degToRad(-90), 0, 0]}
+                    position={[0, -0.4, 0]}
+                >
+                    <meshStandardMaterial
+                        map={groundTexture}
+                    />
+                    <planeGeometry args={[10, 3]} />
+                </mesh>
 
                 {/* <group
                             position={[0, 0, 0]}
@@ -163,11 +257,11 @@ export default function Model(props) {
                             />
                         </group> */}
 
-                <MovingSpot
+                {/* <MovingSpot
                     section_i={section_i}
                     color="#0c8cbf"
                     position={[0, 1.8, 0]}
-                />
+                /> */}
 
                 {/* <MySpotlight /> */}
 

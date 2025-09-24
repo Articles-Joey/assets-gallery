@@ -43,14 +43,12 @@ export default function AssetsMuseumLobbyPage() {
 
     // const [assetGalleryTheme, setAssetGalleryTheme] = useLocalStorage("game:asset-gallery:theme", "Forest")
 
-    const {
-        controlType,
-        setControlType,
-        galleryTheme,
-        setGalleryTheme,
-        music,
-        setMusic
-    } = useAssetGalleryStore()
+    const controlType = useAssetGalleryStore(state => state.controlType);
+    const setControlType = useAssetGalleryStore(state => state.setControlType);
+    const galleryTheme = useAssetGalleryStore(state => state.galleryTheme);
+    const setGalleryTheme = useAssetGalleryStore(state => state.setGalleryTheme);
+    const music = useAssetGalleryStore(state => state.music);
+    const setMusic = useAssetGalleryStore(state => state.setMusic);
 
     return (
         <div className="assets-gallery-lobby-page">

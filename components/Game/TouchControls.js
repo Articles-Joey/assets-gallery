@@ -21,12 +21,6 @@ export default function TouchControls(props) {
         touchControls, setTouchControls
     } = useControlsStore()
 
-    const {
-        ref,
-        // api, 
-        // position 
-    } = useAssetGalleryStore();
-
     const [movementInterval, setMovementInterval] = useState(null);
 
     useEffect(() => {

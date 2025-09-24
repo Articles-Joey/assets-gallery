@@ -15,6 +15,8 @@ const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
 
 export default function AssetsMuseumGamePage() {
 
+    const useFallback = useAssetGalleryStore((state) => state.useFallback);
+
     // const [showModal, setShowModal] = useState(false);
 
     // const handleClose = () => setShowModal(false);
@@ -39,6 +41,9 @@ export default function AssetsMuseumGamePage() {
     });
 
     const [sceneKey, setSceneKey] = useState(0);
+    useHotkeys('r', () => {
+        setSceneKey((prev) => prev + 1)
+    })
     const reloadScene = () => {
         setSceneKey((prevKey) => prevKey + 1);
     };
@@ -68,6 +73,18 @@ export default function AssetsMuseumGamePage() {
                 >
                     Game Menu
                 </ArticlesButton>
+
+                {useFallback &&
+                    <ArticlesButton
+                        active={menuOpen}
+                        variant="danger"
+                        onClick={() => {
+                            alert("The local API server is not running. The gallery is using a fallback remote API.")
+                        }}
+                    >
+                        <i className="fad fa-exclamation-triangle me-0"></i>
+                    </ArticlesButton>
+                }
 
             </div>
 

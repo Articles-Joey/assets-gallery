@@ -12,11 +12,7 @@ const Ground = () => {
         rotation: [-Math.PI / 2, 0, 0], position: [0, -1, 0]
     }))
 
-    const {
-        galleryTheme
-    } = useAssetGalleryStore(state => ({
-        galleryTheme: state.galleryTheme,
-    }));
+    const galleryTheme = useAssetGalleryStore(state => state.galleryTheme);
 
     // let groundTexture
 
@@ -34,7 +30,7 @@ const Ground = () => {
         texture.magFilter = NearestFilter;
         texture.wrapS = RepeatWrapping;
         texture.wrapT = RepeatWrapping;
-        texture.repeat.set(10, 100);
+        texture.repeat.set(100, 100);
 
         setGroundTexture(texture);
 
@@ -48,7 +44,7 @@ const Ground = () => {
         <mesh
             ref={ref}
         >
-            <planeGeometry attach='geometry' args={[15, 100]} />
+            <planeGeometry attach='geometry' args={[100, 100]} />
 
             {/* <meshStandardMaterial color={'green'} /> */}
             {/* {galleryTheme == "Museum" && <meshStandardMaterial attach='material' color={'white'} />}
@@ -57,7 +53,8 @@ const Ground = () => {
             <meshStandardMaterial
                 attach="material"
                 color={galleryTheme === "Museum" ? "white" : undefined}
-                map={galleryTheme === "Forest" && groundTexture ? groundTexture : undefined}
+                // map={galleryTheme === "Forest" && groundTexture ? groundTexture : undefined}
+                map={groundTexture}
             />
 
         </mesh>
