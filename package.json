@@ -4,8 +4,8 @@
   "private": false,
   "homepage": "https://assets-gallery.articles.media",
   "scripts": {
-    "dev": "next dev -p 3033",
-    "build": "next build",
+    "dev": "next dev --webpack -p 3033",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint"
   },
@@ -31,11 +31,12 @@
     "react-hotkeys-hook": "^5.1.0",
     "sass": "^1.94.2",
     "socket.io-client": "^4.8.1",
-    "swr": "^2.3.7",
+    "swr": "^2.3.8",
     "three": "^0.178.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9",
     "eslint-config-next": "^16"
   }
