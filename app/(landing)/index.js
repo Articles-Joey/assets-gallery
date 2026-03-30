@@ -11,6 +11,7 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import ArticlesButton from '@/components/UI/Button';
 // import { useLocalStorage } from 'util/useLocalStorage';
 import { useAssetGalleryStore } from '@/hooks/useAssetGalleryStore';
+import { useStore } from '@/hooks/useStore';
 // import routes from 'components/constants/routes';
 
 // const Ad = dynamic(() => import('components/Ads/Ad'), {
@@ -33,6 +34,8 @@ const locations = [
 ]
 
 export default function AssetsMuseumLobbyPage() {
+
+    const setShowSettingsModal = useStore(state => state.setShowSettingsModal);
 
     const [authorFilter, setAuthorFilter] = useState('Anyone')
     const [typeFilter, setTypeFilter] = useState('Anything')
@@ -77,7 +80,7 @@ export default function AssetsMuseumLobbyPage() {
                     <div className="card card-articles card-sm mb-4">
 
                         <div className="card-header">
-                            <b>Gallery Settings</b>
+                            <b>Assets Gallery by Articles Media</b>
                         </div>
 
                         <div className="card-body">
@@ -271,11 +274,11 @@ export default function AssetsMuseumLobbyPage() {
                                     className={`w-100`}
                                     // small
                                     onClick={() => {
-
+                                        setShowSettingsModal(true)
                                     }}
                                 >
-                                    <i className="fad fa-sign-out fa-rotate-180"></i>
-                                    Leave Game
+                                    <i className="fad fa-cog"></i>
+                                    Settings
                                 </ArticlesButton>
                             </Link>
 

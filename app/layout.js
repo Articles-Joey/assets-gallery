@@ -11,6 +11,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@/styles/index.scss";
 import SocketLogicHandler from "@/components/SocketLogicHandler";
 import AudioManager from '@/components/Game/AudioManager';
+import GlobalClientModals from '@/components/UI/GlobalClientModals';
+import { Suspense } from 'react';
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -44,8 +46,11 @@ export default function RootLayout({ children }) {
       // className={`${geistSans.variable} ${geistMono.variable}`}
       >
 
-        <SocketLogicHandler />
-        <AudioManager />
+        <Suspense>
+          <SocketLogicHandler />
+          <AudioManager />
+          <GlobalClientModals />
+        </Suspense>
 
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <ThemeProvider theme={theme}>

@@ -3,17 +3,24 @@ import { useState } from "react";
 import { Modal, Form } from "react-bootstrap"
 
 import ArticlesButton from "@/components/UI/Button";
+import { useStore } from "@/hooks/useStore";
 
-export default function FourFrogsSettingsModal({
+export default function SettingsModal({
     show,
     setShow,
 }) {
+
+    const graphicsQuality = useStore(state => state.graphicsQuality);
+    const setGraphicsQuality = useStore(state => state.setGraphicsQuality);
+
+    const darkMode = useStore(state => state.darkMode);
+    const setDarkMode = useStore(state => state.setDarkMode);
 
     const [showModal, setShowModal] = useState(true)
 
     const [lightboxData, setLightboxData] = useState(null)
 
-    const [tab, setTab] = useState('Controls')
+    const [tab, setTab] = useState('Graphics')
 
     return (
         <>
@@ -52,9 +59,10 @@ export default function FourFrogsSettingsModal({
 
                     <div className='p-2'>
                         {[
+                            'Graphics',
                             'Controls',
                             'Audio',
-                            'Chat'
+                            // 'Chat'
                         ].map(item =>
                             <ArticlesButton
                                 key={item}
@@ -69,6 +77,47 @@ export default function FourFrogsSettingsModal({
                     <hr className="my-0" />
 
                     <div className="p-2">
+                        {tab == 'Graphics' &&
+                            <div>
+
+                                <div className="mb-3">
+                                    <div className="text-muted mb-1">Dark Mode</div>
+                                    <ArticlesButton
+                                        // key={level}
+                                        className={``}
+                                        active={!darkMode}
+                                        // small
+                                        onClick={() => setDarkMode(false)}
+                                    >
+                                        Off
+                                    </ArticlesButton>
+                                    <ArticlesButton
+                                        // key={level}
+                                        className={``}
+                                        active={darkMode}
+                                        // small
+                                        onClick={() => setDarkMode(true)}
+                                    >
+                                        On
+                                    </ArticlesButton>
+                                </div>
+
+                                <div>
+                                    <div className="text-muted mb-1">Graphics Quality</div>
+                                    {['Low', 'Medium', 'High'].map(level =>
+                                        <ArticlesButton
+                                            key={level}
+                                            className={``}
+                                            active={level == graphicsQuality}
+                                            // small
+                                            onClick={() => setGraphicsQuality(level)}
+                                        >
+                                            {level}
+                                        </ArticlesButton>
+                                    )}
+                                </div>
+                            </div>
+                        }
                         {tab == 'Controls' &&
                             <div>
                                 {[
@@ -88,29 +137,6 @@ export default function FourFrogsSettingsModal({
                                         action: 'Move Right',
                                         defaultKeyboardKey: 'D'
                                     },
-                                    {
-                                        action: 'Drop Insect',
-                                        defaultKeyboardKey: 'Space'
-                                    },
-                                    {
-                                        action: 'Stop Powerup',
-                                        defaultKeyboardKey: 'ArrowDown'
-                                    },
-                                    {
-                                        emote: true,
-                                        action: 'Stick out Tongue',
-                                        defaultKeyboardKey: 'ArrowDown'
-                                    },
-                                    {
-                                        emote: true,
-                                        action: 'Rotate Left',
-                                        defaultKeyboardKey: 'ArrowLeft'
-                                    },
-                                    {
-                                        emote: true,
-                                        action: 'Rotate Right',
-                                        defaultKeyboardKey: 'ArrowRight'
-                                    }
                                 ].map(obj =>
                                     <div key={obj.action}>
                                         <div className="flex-header border-bottom pb-1 mb-1">
@@ -124,7 +150,7 @@ export default function FourFrogsSettingsModal({
 
                                                 <div className="badge badge-hover bg-articles me-1">{obj.defaultKeyboardKey}</div>
 
-                                                <ArticlesButton 
+                                                <ArticlesButton
                                                     className=""
                                                     small
                                                 >
