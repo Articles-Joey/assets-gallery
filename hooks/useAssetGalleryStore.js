@@ -65,4 +65,10 @@ export const useAssetGalleryStore = create((set) => ({
 	setPlayer: (ref, api) => set({ ref, api }),
     setPosition: (position) => set({ position }),
 
+    cameraDistance: 6,
+    setCameraDistance: (newValue) => set({ cameraDistance: newValue }),
+
+    isThirdPerson: false,
+    setIsThirdPerson: (newValue) => set({ isThirdPerson: newValue }),
+
 }))

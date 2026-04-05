@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useLayoutEffect, useMemo, memo } from 'react';
 
 import { Physics, useBox } from '@react-three/cannon';
-import { Sky, Html, OrbitControls, Text } from '@react-three/drei';
+import { Sky, Html, OrbitControls, Text, Image } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 
 import Ground from './Ground'
@@ -25,8 +25,12 @@ import useAssets from '@/hooks/useAssets';
 
 // import ArticlesButton from '@/components/UI/Button';
 import TouchControls from './TouchControls';
+import CameraZoomIndicator from '@/components/UI/CameraZoomIndicator';
 import { GLTFLoader } from 'three-stdlib';
 import { degToRad } from 'three/src/math/MathUtils';
+
+import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
+import { useStore } from '@/hooks/useStore';
 
 function Box(props) {
 
@@ -62,10 +66,16 @@ function Box(props) {
     )
 }
 
-function AssetSectionImageAsset(props) {
+function AssetSectionImageAsset({ asset_obj, ...props }) {
+
+    const galleryTheme = useAssetGalleryStore(state => state.galleryTheme)
 
     const [size, set] = useState(1)
     const [hidden, setVisible] = useState(false)
+
+    // const textColor = galleryTheme !== 'Museum' ? '#fff' : '#000'
+    const textColor = useMemo(() => galleryTheme !== 'Museum' ? '#fff' : '#000', [galleryTheme])
+    // const textColor = "#000"
 
     return (
         <group>
@@ -77,7 +87,7 @@ function AssetSectionImageAsset(props) {
                     color={props.color || "#fff"}
                 />
 
-                {true && <Html
+                {false && <Html
                     style={{
                         transition: 'all 0.2s',
                         opacity: hidden ? 0 : 1,
@@ -94,6 +104,48 @@ function AssetSectionImageAsset(props) {
                     <div className="w-100 h-100">{props.html}</div>
                     {/* <Slider style={{ width: 100 }} min={0.5} max={1} step={0.01} value={size} onChange={set} /> */}
                 </Html>}
+
+                {asset_obj?.file?.thumbnail?.key &&
+                    <Image
+                        url={`${process.env.NEXT_PUBLIC_CDN}${asset_obj?.file?.thumbnail?.key}`}
+                        position={[0, 0.11, 0.07]}
+                        scale={[0.9, 0.9 * (9 / 16)]}
+                        zoom={1}
+                    />
+                }
+
+                <group position={[0, 0.03, 0]}>
+                    <Text
+                        position={[0, -0.21, 0.07]}
+                        fontSize={0.06}
+                        color={textColor}
+                        anchorX="center"
+                        anchorY="middle"
+                        maxWidth={0.85}
+                    >
+                        {asset_obj.name}
+                    </Text>
+                    <Text
+                        position={[0, -0.29, 0.07]}
+                        fontSize={0.04}
+                        color={textColor}
+                        anchorX="center"
+                        anchorY="middle"
+                        maxWidth={0.85}
+                    >
+                        {asset_obj.city}, {asset_obj.state}
+                    </Text>
+                    <Text
+                        position={[0, -0.35, 0.07]}
+                        fontSize={0.04}
+                        color={textColor}
+                        anchorX="center"
+                        anchorY="middle"
+                        maxWidth={0.85}
+                    >
+                        By @{asset_obj.populated_user.username}
+                    </Text>
+                </group>
 
             </mesh>
 
@@ -209,6 +261,7 @@ function AssetSections(props) {
                 {asset_obj.asset_type == "Image" &&
                     <AssetSectionImageAsset
                         // key={asset_obj._id}
+                        asset_obj={asset_obj}
                         color={getBoxColorFromTheme(galleryTheme)}
                         scale={1 * 2}
                         position={[2.5, 0.5, 0]}
@@ -391,14 +444,15 @@ function AssetSections(props) {
 }
 
 function GameCanvas({
-    isFullscreen,
-    requestFullscreen,
-    exitFullscreen,
-    menuOpen
+    // isFullscreen,
+    // requestFullscreen,
+    // exitFullscreen,
+    // menuOpen
 }) {
 
-    const controlType = useAssetGalleryStore(state => state.controlType);
+    const { isFullscreen } = useFullscreen();
 
+    const controlType = useAssetGalleryStore(state => state.controlType);
 
     // const [location, setLocation] = useState([0, 0, 0])
 
@@ -451,6 +505,7 @@ function GameCanvas({
     return (
         <div
             className={`canvas-wrap ${isFullscreen && 'fullscreen'}`}
+            id={"canvas-wrap"}
         >
 
             <Canvas style={{ zIndex: 1 }} id="gallery-canvas">
@@ -543,6 +598,8 @@ function GameCanvas({
             </Canvas>
 
             <div className='absolute centered cursor noselect'>+</div>
+
+            <CameraZoomIndicator />
 
             {controlType == "Touch" &&
                 <TouchControls

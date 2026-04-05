@@ -1,10 +1,12 @@
 import useSWR from "swr";
 import { useState } from "react";
 
-import axios from "axios";
 import { useAssetGalleryStore } from "./useAssetGalleryStore";
 
-const fetcher = (url) => axios.get(url).then((res) => res.data);
+const fetcher = (url) => fetch(url).then((res) => {
+    if (!res.ok) throw new Error(res.statusText);
+    return res.json();
+});
 
 const useAssets = (params) => {
 

@@ -1,9 +1,16 @@
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 
 export const useStore = create()(
   persist(
     (set, get) => ({
+
+      _hasHydrated: false,
+      setHasHydrated: (state) => {
+        set({
+          _hasHydrated: state
+        });
+      },
 
       darkMode: true,
       setDarkMode: (value) => set({ darkMode: value }),
@@ -38,6 +45,10 @@ export const useStore = create()(
       setSidebar: (value) => set({ sidebar: value }),
       toggleSidebar: () => set({ sidebar: !get().sidebar }),
 
+      landingAnimation: true,
+      setLandingAnimation: (value) => set({ landingAnimation: value }),
+      toggleLandingAnimation: () => set({ landingAnimation: !get().landingAnimation }),
+
       showInfoModal: false,
       setShowInfoModal: (value) => set({ showInfoModal: value }),
       toggleInfoModal: () => set({ showInfoModal: !get().showInfoModal }),
@@ -54,6 +65,10 @@ export const useStore = create()(
       setShowCreditsModal: (value) => set({ showCreditsModal: value }),
       toggleCreditsModal: () => set({ showCreditsModal: !get().showCreditsModal }),
 
+      debug: false,
+      toggleDebug: () => set({ debug: !get().debug }),
+      setDebug: (value) => set({ debug: value })
+
     }),
     {
       name: 'assets-gallery-storage', // name of the item in the storage (must be unique)
@@ -62,6 +77,9 @@ export const useStore = create()(
         nickname: state.nickname,
         character: state.character,
         darkMode: state.darkMode,
+        graphicsQuality: state.graphicsQuality,
+        landingAnimation: state.landingAnimation,
+        sidebar: state.sidebar
       }),
       onRehydrateStorage: () => (state) => {
         state.setHasHydrated(true)

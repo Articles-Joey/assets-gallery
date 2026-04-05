@@ -18,8 +18,8 @@ export const FPV = ({ location, setLocation, menuOpen }) => {
     return (
         <PointerLockControls
             selector="canvas"
-            // args={[camera, gl.domElement]}
-            // onUpdate={handleUpdate}
+            minPolarAngle={0.2}
+            maxPolarAngle={Math.PI - 0.2}
         />
     )
 

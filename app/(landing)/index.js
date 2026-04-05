@@ -18,6 +18,22 @@ import { useStore } from '@/hooks/useStore';
 //     ssr: false,
 // });
 
+function FlatBackground({ galleryTheme }) {
+    return (
+        <img
+            className='w-100 h-100'
+            style={{ objectFit: 'cover' }}
+            src={locations?.find(obj => obj.name == galleryTheme)?.thumb}
+            alt=""
+        />
+    )
+}
+
+// const LandingBackgroundAnimation = dynamic(() => import('@/components/Game/LandingBackgroundAnimation'), {
+//     ssr: false,
+//     loading: () => <FlatBackground galleryTheme={"Forest"} />
+// });
+
 const locations = [
     {
         name: 'Forest',
@@ -36,6 +52,14 @@ const locations = [
 export default function AssetsMuseumLobbyPage() {
 
     const setShowSettingsModal = useStore(state => state.setShowSettingsModal);
+    const setShowCreditsModal = useStore(state => state.setShowCreditsModal);
+    const setShowInfoModal = useStore(state => state.setShowInfoModal);
+
+    // const darkMode = useStore(state => state.darkMode);
+    // const setDarkMode = useStore(state => state.setDarkMode);
+    const toggleDarkMode = useStore(state => state.toggleDarkMode);
+
+    const landingAnimation = useStore(state => state.landingAnimation);
 
     const [authorFilter, setAuthorFilter] = useState('Anyone')
     const [typeFilter, setTypeFilter] = useState('Anything')
@@ -63,6 +87,21 @@ export default function AssetsMuseumLobbyPage() {
                     src={locations?.find(obj => obj.name == galleryTheme)?.thumb}
                     alt=""
                 />
+            </div>
+
+            <div className='background-wrap'>
+                {landingAnimation ?
+                    <>
+                        {/* <LandingBackgroundAnimation /> */}
+                        <FlatBackground
+                            galleryTheme={galleryTheme}
+                        />
+                    </>
+                    :
+                    <FlatBackground
+                        galleryTheme={galleryTheme}
+                    />
+                }
             </div>
 
             <div className="container d-flex justify-content-center">
@@ -99,7 +138,7 @@ export default function AssetsMuseumLobbyPage() {
                                 />
                             </div>
 
-                            <div className="small">Scene</div>
+                            {/* <div className="small">Scene</div>
                             <div className='mb-3'>
 
                                 {locations.map(obj => {
@@ -117,9 +156,9 @@ export default function AssetsMuseumLobbyPage() {
                                     )
                                 })}
 
-                            </div>
+                            </div> */}
 
-                            <div className="small">Controls</div>
+                            {/* <div className="small">Controls</div>
                             <div className='mb-3'>
                                 {['Mouse and Keyboard', 'Touch'].map(item => {
                                     return (
@@ -135,7 +174,7 @@ export default function AssetsMuseumLobbyPage() {
                                         </ArticlesButton>
                                     )
                                 })}
-                            </div>
+                            </div> */}
 
                             <div className="small">Audio</div>
                             <div className='mb-3'>
@@ -264,15 +303,29 @@ export default function AssetsMuseumLobbyPage() {
 
                             </div>
 
+                            <hr />
+
+                            <Link
+                                className="w-100"
+                                href={'/' + 'play'}
+                            >
+                                <ArticlesButton
+                                    className={`w-100`}
+                                    large
+                                >
+                                    <i className="fad fa-play"></i>
+                                    Enter Asset Gallery
+                                </ArticlesButton>
+                            </Link>
 
                         </div>
 
-                        <div className="card-footer d-flex justify-content-center">
+                        <div className="card-footer d-flex flex-wrap justify-content-center">
 
-                            <Link href={'/'} className='w-50'>
+                            <div className='d-flex w-50'>
                                 <ArticlesButton
                                     className={`w-100`}
-                                    // small
+                                    small
                                     onClick={() => {
                                         setShowSettingsModal(true)
                                     }}
@@ -280,19 +333,51 @@ export default function AssetsMuseumLobbyPage() {
                                     <i className="fad fa-cog"></i>
                                     Settings
                                 </ArticlesButton>
-                            </Link>
+                                <ArticlesButton
+                                    className={``}
+                                    small
+                                    onClick={() => {
+                                        toggleDarkMode();
+                                    }}
+                                >
+                                    <i className="fad fa-palette"></i>
+                                </ArticlesButton>
+                            </div>
 
-                            <Link
-                                className="w-50"
-                                href={'/' + 'play'}
+                            <ArticlesButton
+                                className={`w-50`}
+                                small
+                                onClick={() => {
+                                    setShowInfoModal(true)
+                                }}
                             >
+                                <i className="fad fa-info-square"></i>
+                                Info
+                            </ArticlesButton>
+
+                            <Link href={'https://github.com/Articles-Joey/assets-gallery'} className='w-50' target="_blank" rel="noopener noreferrer">
                                 <ArticlesButton
                                     className={`w-100`}
+                                    small
+                                    onClick={() => {
+
+                                    }}
                                 >
-                                    <i className="fad fa-play"></i>
-                                    Enter Asset Gallery
+                                    <i className="fab fa-github"></i>
+                                    Github
                                 </ArticlesButton>
                             </Link>
+
+                            <ArticlesButton
+                                className={`w-50`}
+                                small
+                                onClick={() => {
+                                    setShowCreditsModal(true);
+                                }}
+                            >
+                                <i className="fad fa-users"></i>
+                                Credits
+                            </ArticlesButton>
 
                         </div>
 

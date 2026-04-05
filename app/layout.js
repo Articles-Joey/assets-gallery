@@ -9,10 +9,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // import "./globals.css";
 import "@/styles/index.scss";
+
+import "@articles-media/articles-dev-box/dist/style.css";
+
+import "@articles-media/articles-gamepad-helper/dist/articles-gamepad-helper.css";
+
 import SocketLogicHandler from "@/components/SocketLogicHandler";
 import AudioManager from '@/components/Game/AudioManager';
 import GlobalClientModals from '@/components/UI/GlobalClientModals';
 import { Suspense } from 'react';
+import LayoutClient from './layoutClient';
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -45,6 +51,8 @@ export default function RootLayout({ children }) {
       <body
       // className={`${geistSans.variable} ${geistMono.variable}`}
       >
+
+        <LayoutClient />
 
         <Suspense>
           <SocketLogicHandler />

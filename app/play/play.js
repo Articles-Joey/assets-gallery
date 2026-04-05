@@ -5,9 +5,13 @@ import dynamic from 'next/dynamic'
 import ArticlesButton from '@/components/UI/Button';
 
 import Menu from '@/components/Game/Menu';
-import useFullscreen from '@/hooks/useFullScreen';
+
+// import useFullscreen from '@/hooks/useFullScreen';
+import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
+
 import { useAssetGalleryStore } from '@/hooks/useAssetGalleryStore';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useStore } from '@/hooks/useStore';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
@@ -21,6 +25,10 @@ export default function AssetsMuseumGamePage() {
 
     // const handleClose = () => setShowModal(false);
 
+    const showSettingsModal = useStore((state) => state.showSettingsModal);
+    const setShowSettingsModal = useStore((state) => state.setShowSettingsModal);
+
+    // TODO - Zustand
     const [menuOpen, setMenuOpen] = useState(false)
 
     const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
@@ -71,7 +79,17 @@ export default function AssetsMuseumGamePage() {
                         setMenuOpen(!menuOpen)
                     }}
                 >
-                    Game Menu
+                    <i className='fad fa-plus me-2'></i>
+                    Menu
+                </ArticlesButton>
+
+                <ArticlesButton
+                    active={showSettingsModal}
+                    onClick={() => {
+                        setShowSettingsModal(true)
+                    }}
+                >
+                    <i className='fad fa-cog'></i>
                 </ArticlesButton>
 
                 {useFallback &&
@@ -97,9 +115,6 @@ export default function AssetsMuseumGamePage() {
             >
                 <Menu
                     {...{
-                        isFullscreen,
-                        requestFullscreen,
-                        exitFullscreen,
                         menuOpen,
                         reloadScene
                     }}
@@ -108,12 +123,6 @@ export default function AssetsMuseumGamePage() {
 
             <GameCanvas
                 key={sceneKey}
-                {...{
-                    isFullscreen,
-                    requestFullscreen,
-                    exitFullscreen,
-                    // menuOpen
-                }}
             />
 
         </div>

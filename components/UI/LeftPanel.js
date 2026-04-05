@@ -11,6 +11,8 @@ import { useIceSlideStore } from "@/hooks/useIceSlideStore";
 import { useEffect, useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
+import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
+
 export default function LeftPanelContent(props) {
 
     const {
@@ -20,11 +22,13 @@ export default function LeftPanelContent(props) {
         setTouchControlsEnabled,
         reloadScene,
         controllerState,
-        isFullscreen,
-        requestFullscreen,
-        exitFullscreen,
-        setShowMenu
+        // isFullscreen,
+        // requestFullscreen,
+        // exitFullscreen,
+        // setShowMenu
     } = props;
+
+    const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
 
     const {
         hitRotation,

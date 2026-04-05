@@ -1,23 +1,40 @@
 "use client";
+import { useAudioStore } from '@/hooks/useAudioStore';
 import { useStore } from '@/hooks/useStore';
+import { useTouchControlsStore } from '@/hooks/useTouchControlsStore';
 import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react';
 
 const InfoModal = dynamic(
     () => import('@/components/UI/InfoModal'),
     { ssr: false }
 )
 
+// const SettingsModal = dynamic(
+//     () => import('@/components/UI/SettingsModal'),
+//     { ssr: false }
+// )
 const SettingsModal = dynamic(
-    () => import('@/components/UI/SettingsModal'),
+    () => import('@articles-media/articles-dev-box/SettingsModal'),
     { ssr: false }
 )
 
+// const CreditsModal = dynamic(
+//     () => import('@/components/UI/CreditsModal'),
+//     { ssr: false }
+// )
 const CreditsModal = dynamic(
-    () => import('@/components/UI/CreditsModal'),
+    () => import('@articles-media/articles-dev-box/CreditsModal'),
     { ssr: false }
 )
 
 export default function GlobalClientModals() {
+
+    const [containerRef, setContainerRef] = useState(null)
+
+    useEffect(() => {
+        setContainerRef(document.getElementById('canvas-wrap'))
+    }, [])
 
     const showInfoModal = useStore((state) => state.showInfoModal)
     const setShowInfoModal = useStore((state) => state.setShowInfoModal)
@@ -37,10 +54,55 @@ export default function GlobalClientModals() {
                 />
             }
 
+            {/* {showSettingsModal &&
+                <SettingsModal
+                    show={showSettingsModal}
+                    setShow={setShowSettingsModal}
+                />
+            } */}
             {showSettingsModal &&
                 <SettingsModal
                     show={showSettingsModal}
                     setShow={setShowSettingsModal}
+                    store={useStore}
+                    containerRef={containerRef}
+                    useAudioStore={useAudioStore}
+                    useTouchControlsStore={useTouchControlsStore}
+                    config={{
+                        tabs: {
+                            'Graphics': {
+                                darkMode: true,
+                                landingAnimation: true
+                            },
+                            'Audio': {
+                                sliders: [
+                                    {
+                                        key: "gameVolume",
+                                        label: "Game Volume"
+                                    },
+                                    {
+                                        key: "musicVolume",
+                                        label: "Music Volume"
+                                    }
+                                ]
+                            },
+                            'Controls': {
+                                touchControls: true,
+                                defaultKeyBindings: {
+                                    // moveUp: "W",
+                                    // moveDown: "S",
+                                    // moveLeft: "A",
+                                    // moveRight: "D",
+                                }
+                            },
+                            'Multiplayer': {
+                                visible: false,
+                            },
+                            'Other': {
+
+                            }
+                        }
+                    }}
                 />
             }
 
@@ -48,6 +110,8 @@ export default function GlobalClientModals() {
                 <CreditsModal
                     show={showCreditsModal}
                     setShow={setShowCreditsModal}
+                    owner="Articles-Joey"
+                    repo="assets-gallery"
                 />
             }
         </>

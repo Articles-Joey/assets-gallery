@@ -4,6 +4,7 @@ import ArticlesButton from '@/components/UI/Button';
 import { useAssetGalleryStore } from '@/hooks/useAssetGalleryStore';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 // import useFullscreen from 'util/useFullScreen';
+import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
 import Link from 'next/link';
 // import routes from '@/components/constants/routes';
 
@@ -22,12 +23,14 @@ function PlayerPosition() {
 }
 
 const Menu = ({
-    isFullscreen,
-    requestFullscreen,
-    exitFullscreen,
+    // isFullscreen,
+    // requestFullscreen,
+    // exitFullscreen,
     menuOpen,
     reloadScene
 }) => {
+
+    const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
 
     const controlType = useAssetGalleryStore((state) => state.controlType);
     const setControlType = useAssetGalleryStore((state) => state.setControlType);
@@ -161,7 +164,9 @@ const Menu = ({
                                 }
 
                                 // Always target wrap so menu and cursor are included
-                                requestFullscreen('gallery-canvas-wrap')
+                                // requestFullscreen('gallery-canvas-wrap')
+                                // Just body, so modals
+                                requestFullscreen()
 
                             }}
                         >
