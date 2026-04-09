@@ -18,6 +18,11 @@ import { useStore } from '@/hooks/useStore';
 //     ssr: false,
 // });
 
+const ReturnToLauncherButton = dynamic(() =>
+    import('@articles-media/articles-dev-box/ReturnToLauncherButton'),
+    { ssr: false }
+);
+
 function FlatBackground({ galleryTheme }) {
     return (
         <img
@@ -108,18 +113,20 @@ export default function AssetsMuseumLobbyPage() {
 
                 <div style={{ "width": "24rem" }}>
 
-                    <h1 className='h2'>Community Assets Gallery</h1>
+                    <div className='d-none'>
+                        <h1 className='h2'>Community Assets Gallery</h1>
 
-                    <p>
-                        View assets submitted via the <span className='text-decoration-underline'>
-                            <Link prefetch={false} href={'https://articles.media/community/assets'}>/community/assets</Link>
-                        </span> page in a 3D walkable world.
-                    </p>
+                        <p>
+                            View assets submitted via the <span className='text-decoration-underline'>
+                                <Link prefetch={false} href={'https://articles.media/community/assets'}>/community/assets</Link>
+                            </span> page in a 3D walkable world.
+                        </p>
+                    </div>
 
                     <div className="card card-articles card-sm mb-4">
 
                         <div className="card-header">
-                            <b>Assets Gallery by Articles Media</b>
+                            <b>Community Assets Gallery</b>
                         </div>
 
                         <div className="card-body">
@@ -129,7 +136,7 @@ export default function AssetsMuseumLobbyPage() {
                                 <span className='small'>More Filters will be enabled when more assets are available.</span>
                             </div> */}
 
-                            <div className="ratio ratio-16x9 bg-black mb-3">
+                            <div className="ratio ratio-16x9 bg-black mb-3 border border-2 border-dark">
                                 <img
                                     className='w-100 h-100'
                                     style={{ objectFit: 'cover' }}
@@ -176,7 +183,7 @@ export default function AssetsMuseumLobbyPage() {
                                 })}
                             </div> */}
 
-                            <div className="small">Audio</div>
+                            {/* <div className="small">Audio</div>
                             <div className='mb-3'>
 
                                 {[
@@ -197,9 +204,9 @@ export default function AssetsMuseumLobbyPage() {
                                     )
                                 })}
 
-                            </div>
+                            </div> */}
 
-                            <hr />
+                            {/* <hr /> */}
 
                             <div className='d-flex'>
 
@@ -383,13 +390,29 @@ export default function AssetsMuseumLobbyPage() {
 
                     </div>
 
+                    <div className='mb-3'>
+                        <ReturnToLauncherButton />
+                    </div>
+
                     <div className='d-flex justify-content-center'>
-                        <span className='badge badge-articles badge-hover me-2'>
-                            Submit an Asset
-                        </span>
-                        <span className='badge badge-articles badge-hover'>
-                            View Community Assets
-                        </span>
+                        {/* <a
+                            href="https://articles.media/community/assets"
+                            target='_blank'
+                            rel='noopener noreferrer'
+                        >
+                            <span className='badge badge-articles badge-hover me-2'>
+                                Submit an Asset
+                            </span>
+                        </a> */}
+                        <a
+                            href="https://articles.media/community/assets"
+                            target='_blank'
+                            rel='noopener noreferrer'
+                        >
+                            <span className='badge badge-articles badge-hover'>
+                                View Community Assets
+                            </span>
+                        </a>
                     </div>
 
                 </div>

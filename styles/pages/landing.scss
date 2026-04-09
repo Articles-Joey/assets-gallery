@@ -1,7 +1,7 @@
 @use "@/styles/components/global.scss" as *;
 
 .assets-gallery-lobby-page {
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 0px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,6 +12,7 @@
         bottom: 0;
         left: 0;
         right: 0;
+        z-index: -1;
 
         img {
             filter: blur(3px);
