@@ -2,12 +2,15 @@ import { memo, useEffect, useState } from 'react';
 
 import ArticlesButton from '@/components/UI/Button';
 import { useAssetGalleryStore } from '@/hooks/useAssetGalleryStore';
-import { Dropdown, DropdownButton } from 'react-bootstrap';
+import { Dropdown, DropdownButton, Form } from 'react-bootstrap';
 // import useFullscreen from 'util/useFullScreen';
 import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
 import Link from 'next/link';
 import { useStore } from '@/hooks/useStore';
 // import routes from '@/components/constants/routes';
+
+const MIN_DISTANCE = 2;
+const MAX_DISTANCE = 20;
 
 function PlayerPosition() {
     const position = useAssetGalleryStore((state) => state.position);
@@ -36,12 +39,20 @@ const Menu = ({
 
     const controlType = useStore(state => state.controlType);
     const setControlType = useStore((state) => state.setControlType);
-    
+
     const galleryTheme = useAssetGalleryStore((state) => state.galleryTheme);
     const setGalleryTheme = useAssetGalleryStore((state) => state.setGalleryTheme);
 
     const music = useAssetGalleryStore((state) => state.music);
     const setMusic = useAssetGalleryStore((state) => state.setMusic);
+
+    const isThirdPerson = useAssetGalleryStore(state => state.isThirdPerson)
+    const setIsThirdPerson = useAssetGalleryStore(state => state.setIsThirdPerson)
+
+    const cameraDistance = useAssetGalleryStore(state => state.cameraDistance);
+    const setCameraDistance = useAssetGalleryStore(state => state.setCameraDistance)
+
+    const zoomPercent = Math.round((1 - (cameraDistance - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE)) * 100);
 
     // const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
 
@@ -73,6 +84,53 @@ const Menu = ({
                         )
                     })}
                 </div>
+
+                <div className="fw-bold mb-1">
+                    Camera Position
+                    <span className='badge bg-black ms-2'>V</span>
+                </div>
+                <div className='mb-2'>
+                    {['First Person', 'Third Person'].map(item => {
+                        return (
+                            <ArticlesButton
+                                key={item}
+                                small
+                                active={item == 'First Person' ? !isThirdPerson : isThirdPerson}
+                                onClick={() => {
+                                    if (item == 'First Person') {
+                                        setIsThirdPerson(false)
+                                    } else {
+                                        setIsThirdPerson(true)
+                                    }
+                                }}
+                            >
+                                <span>{item}</span>
+                            </ArticlesButton>
+                        )
+                    })}
+                </div>
+
+                {isThirdPerson &&
+                    <>
+                        <div className="fw-bold mb-1">
+                            Camera Zoom
+                            <span className='badge bg-black ms-2'>Mouse Wheel / Pinch</span>
+                        </div>
+                        <div className='mb-2 d-flex align-items-center gap-3'>
+                            <span className='fw-bold'>{zoomPercent}%</span>
+                            <Form.Range
+                                style={{ flex: 1 }}
+                                // min={MIN_DISTANCE}
+                                // max={MAX_DISTANCE}
+                                value={zoomPercent}
+                                onChange={(e) => {
+                                    console.log(e.target.value)
+                                    setCameraDistance( MIN_DISTANCE + (1 - e.target.value / 100) * (MAX_DISTANCE - MIN_DISTANCE) )
+                                }}
+                            />
+                        </div>
+                    </>
+                }
 
                 <div className="fw-bold">Theme</div>
                 <div className='mb-2'>

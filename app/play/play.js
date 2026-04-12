@@ -43,7 +43,7 @@ export default function AssetsMuseumGamePage({
     // TODO - Zustand
     const [menuOpen, setMenuOpen] = useState(false)
 
-    const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
+    const controlType = useStore(state => state.controlType)
 
     const position = useAssetGalleryStore((state) => state.position);
     const setGalleryTheme = useAssetGalleryStore((state) => state.setGalleryTheme);
@@ -77,13 +77,25 @@ export default function AssetsMuseumGamePage({
 
             <div className="menu-bar">
 
-                <small className='me-3'>
+                <small className='location me-3'>
                     <span>X: {position[0].toFixed(2)}</span>
                     <span> - </span>
                     <span>Y: {position[1].toFixed(2)}</span>
                     <span> - </span>
                     <span>Z: {position[2].toFixed(2)}</span>
                 </small>
+
+                {controlType === 'Touch' && <div className="jump">
+                    <button
+                        className="btn btn-dark"
+                        onTouchStart={(e) => { e.preventDefault(); doJump(); }}
+                        onClick={() => {
+                            useAssetGalleryStore.getState().requestJump();
+                        }}
+                    >
+                        Jump
+                    </button>
+                </div>}
 
                 <ArticlesButton
                     active={menuOpen}

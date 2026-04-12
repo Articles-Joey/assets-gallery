@@ -74,6 +74,10 @@ export const useAssetGalleryStore = create((set) => ({
     touchTarget: null,
     setTouchTarget: (pos) => set({ touchTarget: pos }),
 
+    jumpRequested: false,
+    requestJump: () => set({ jumpRequested: true }),
+    clearJump: () => set({ jumpRequested: false }),
+
     touchCameraYaw: 0,
     touchCameraPitch: -0.1,
     setTouchCameraAngle: (yaw, pitch) => set({ touchCameraYaw: yaw, touchCameraPitch: pitch }),

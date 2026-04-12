@@ -29,13 +29,21 @@ export const Player = () => {
 
     const isThirdPerson = useAssetGalleryStore(state => state.isThirdPerson)
     const setIsThirdPerson = useAssetGalleryStore(state => state.setIsThirdPerson)
+    const cameraDistance = useAssetGalleryStore(state => state.cameraDistance)
     const setCameraDistance = useAssetGalleryStore(state => state.setCameraDistance)
+
+    // Sync store cameraDistance (changed by menu slider) into the ref used by useFrame
+    useEffect(() => {
+        cameraDistanceRef.current = cameraDistance
+    }, [cameraDistance])
     
     const controlType = useStore(state => state.controlType)
     const touchTarget = useAssetGalleryStore(state => state.touchTarget)
     const setTouchTarget = useAssetGalleryStore(state => state.setTouchTarget)
     const touchCameraYaw = useAssetGalleryStore(state => state.touchCameraYaw)
     const touchCameraPitch = useAssetGalleryStore(state => state.touchCameraPitch)
+    const jumpRequested = useAssetGalleryStore(state => state.jumpRequested)
+    const clearJump = useAssetGalleryStore(state => state.clearJump)
 
     const { camera } = useThree()
 
@@ -145,13 +153,35 @@ export const Player = () => {
                 const dist = Math.sqrt(dx * dx + dz * dz);
                 if (dist > 0.3) {
                     api.velocity.set((dx / dist) * SPEED, vel.current[1], (dz / dist) * SPEED);
+                    setCurrentAnimation('Walk');
                 } else {
                     api.velocity.set(0, vel.current[1], 0);
                     setTouchTarget(null);
+                    setCurrentAnimation('Idle');
                 }
             } else {
                 api.velocity.set(0, vel.current[1], 0);
+                setCurrentAnimation('Idle');
             }
+
+            if (jumpRequested && canJump.current) {
+                api.velocity.set(vel.current[0], JUMP_FORCE, vel.current[2]);
+                canJump.current = false;
+                clearJump();
+            }
+
+            // Update model position in Touch mode
+            if (modelRef.current) {
+                modelRef.current.position.set(pos.current[0], pos.current[1] - 1, pos.current[2]);
+                if (touchTarget) {
+                    const dx = touchTarget[0] - pos.current[0];
+                    const dz = touchTarget[2] - pos.current[2];
+                    if (Math.abs(dx) > 0.01 || Math.abs(dz) > 0.01) {
+                        modelRef.current.rotation.y = Math.atan2(dx, dz);
+                    }
+                }
+            }
+
             return;
         }
 

@@ -41,10 +41,23 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
+        .location {
+            position: absolute;
+            left: 10px;
+            font-size: 0.8rem;
+        }
+
+        .jump {
+            position: absolute;
+            right: 10px;
+        }
+
     }
 
     .canvas-wrap {
         &.fullscreen {
+
             canvas,
             .canvas-wrap {
                 max-height: calc(100vh - 0px);

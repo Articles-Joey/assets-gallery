@@ -311,8 +311,8 @@ function TouchMarker() {
     const touchTarget = useAssetGalleryStore(state => state.touchTarget);
     if (!touchTarget) return null;
     return (
-        <mesh position={[touchTarget[0], 0.05, touchTarget[2]]}>
-            <cylinderGeometry args={[0.3, 0.3, 0.05, 24]} />
+        <mesh position={[touchTarget[0], -0.5, touchTarget[2]]}>
+            <cylinderGeometry args={[0.15, 0.15, 1, 24]} />
             <meshStandardMaterial color="#00ff88" transparent opacity={0.7} />
         </mesh>
     );
@@ -613,9 +613,10 @@ function GameCanvas({
                     gravity={[0, -10, 0]}
                 >
 
-                    {(controlType == "Mouse and Keyboard" || controlType == "Touch") &&
+                    {/* {(controlType == "Mouse and Keyboard" || controlType == "Touch") &&
                         <Player />
-                    }
+                    } */}
+                    <Player />
 
                     {/* <Platform /> */}
 
@@ -678,11 +679,11 @@ function GameCanvas({
 
             <CameraZoomIndicator />
 
-            {controlType == "Touch" &&
+            {/* {controlType == "Touch" &&
                 <TouchControls
                     touchControlsEnabled={true}
                 />
-            }
+            } */}
 
         </div>
     );
