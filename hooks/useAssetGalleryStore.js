@@ -3,8 +3,8 @@
 import { createWithEqualityFn as create } from 'zustand/traditional'
 // import { nanoid } from 'nanoid'
 
-const getLocalStorage = (key) => JSON.parse(window.localStorage.getItem(key))
-const setLocalStorage = (key, value) => window.localStorage.setItem(key, JSON.stringify(value))
+// const getLocalStorage = (key) => JSON.parse(window.localStorage.getItem(key))
+// const setLocalStorage = (key, value) => window.localStorage.setItem(key, JSON.stringify(value))
 
 export const useAssetGalleryStore = create((set) => ({
 
@@ -70,5 +70,12 @@ export const useAssetGalleryStore = create((set) => ({
 
     isThirdPerson: false,
     setIsThirdPerson: (newValue) => set({ isThirdPerson: newValue }),
+
+    touchTarget: null,
+    setTouchTarget: (pos) => set({ touchTarget: pos }),
+
+    touchCameraYaw: 0,
+    touchCameraPitch: -0.1,
+    setTouchCameraAngle: (yaw, pitch) => set({ touchCameraYaw: yaw, touchCameraPitch: pitch }),
 
 }))

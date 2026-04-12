@@ -6,6 +6,7 @@ import { useKeyboard } from "@/hooks/useKeyboard"
 
 import { useAssetGalleryStore } from '@/hooks/useAssetGalleryStore';
 import SpacesuitModel from '@/components/Models/Spacesuit';
+import { useStore } from "@/hooks/useStore"
 
 const JUMP_FORCE = 4;
 const SPEED = 4;
@@ -29,6 +30,12 @@ export const Player = () => {
     const isThirdPerson = useAssetGalleryStore(state => state.isThirdPerson)
     const setIsThirdPerson = useAssetGalleryStore(state => state.setIsThirdPerson)
     const setCameraDistance = useAssetGalleryStore(state => state.setCameraDistance)
+    
+    const controlType = useStore(state => state.controlType)
+    const touchTarget = useAssetGalleryStore(state => state.touchTarget)
+    const setTouchTarget = useAssetGalleryStore(state => state.setTouchTarget)
+    const touchCameraYaw = useAssetGalleryStore(state => state.touchCameraYaw)
+    const touchCameraPitch = useAssetGalleryStore(state => state.touchCameraPitch)
 
     const { camera } = useThree()
 
@@ -103,6 +110,50 @@ export const Player = () => {
     // }, [pos.current])
 
     useFrame(() => {
+
+        // Touch mode: tap-to-move + drag-to-look (FP and TP)
+        if (controlType === "Touch") {
+            // Apply drag-look angles to camera rotation so the TP orbit logic below can reuse them
+            camera.rotation.order = 'YXZ';
+            camera.rotation.y = touchCameraYaw;
+            camera.rotation.x = touchCameraPitch;
+
+            if (isThirdPerson) {
+                const playerCenter = new Vector3(pos.current[0], pos.current[1] + THIRD_PERSON_HEIGHT, pos.current[2]);
+                const forward = new Vector3(0, 0, -1).applyEuler(camera.rotation);
+                let desiredDistance = cameraDistanceRef.current;
+                const cameraPos = playerCenter.clone().sub(forward.clone().multiplyScalar(desiredDistance));
+                const minY = GROUND_Y + CAMERA_GROUND_OFFSET;
+                if (cameraPos.y < minY) {
+                    const dir = forward.clone().negate().normalize();
+                    if (dir.y < 0) {
+                        const t = (playerCenter.y - minY) / -dir.y;
+                        desiredDistance = Math.min(desiredDistance, t);
+                    }
+                    cameraPos.copy(playerCenter.clone().sub(forward.clone().multiplyScalar(desiredDistance)));
+                    cameraPos.y = Math.max(cameraPos.y, minY);
+                }
+                camera.position.copy(cameraPos);
+                camera.lookAt(playerCenter);
+            } else {
+                camera.position.set(pos.current[0], pos.current[1], pos.current[2]);
+            }
+
+            if (touchTarget) {
+                const dx = touchTarget[0] - pos.current[0];
+                const dz = touchTarget[2] - pos.current[2];
+                const dist = Math.sqrt(dx * dx + dz * dz);
+                if (dist > 0.3) {
+                    api.velocity.set((dx / dist) * SPEED, vel.current[1], (dz / dist) * SPEED);
+                } else {
+                    api.velocity.set(0, vel.current[1], 0);
+                    setTouchTarget(null);
+                }
+            } else {
+                api.velocity.set(0, vel.current[1], 0);
+            }
+            return;
+        }
 
         // Determine current animation based on movement state
         const isMoving = moveForward || moveBackward || moveLeft || moveRight

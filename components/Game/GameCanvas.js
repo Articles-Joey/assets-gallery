@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, useLayoutEffect, useMemo, memo } from 'react';
+import { useEffect, useRef, useState, useLayoutEffect, useMemo, memo, useCallback } from 'react';
 
 import { Physics, useBox } from '@react-three/cannon';
 import { Sky, Html, OrbitControls, Text, Image } from '@react-three/drei';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 
 import Ground from './Ground'
 
@@ -18,7 +18,7 @@ import { FPV } from './FPV'
 // import { useLocalStorage } from 'util/useLocalStorage';
 import { useAssetGalleryStore } from '@/hooks/useAssetGalleryStore';
 
-import useAssets from '@/hooks/useAssets';
+// import useAssets from '@/hooks/useAssets';
 // import useFullscreen from 'util/useFullScreen';
 
 // import { useControlsStore } from '../Glass Ceiling/hooks/useGameStore';
@@ -26,7 +26,6 @@ import useAssets from '@/hooks/useAssets';
 // import ArticlesButton from '@/components/UI/Button';
 import TouchControls from './TouchControls';
 import CameraZoomIndicator from '@/components/UI/CameraZoomIndicator';
-import { GLTFLoader } from 'three-stdlib';
 import { degToRad } from 'three/src/math/MathUtils';
 
 import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
@@ -243,9 +242,87 @@ function AssetSectionModelAsset({ asset_obj }) {
     )
 }
 
+function TouchControls3D() {
+    const { gl } = useThree();
+    const setTouchCameraAngle = useAssetGalleryStore(state => state.setTouchCameraAngle);
+    const yawRef = useRef(0);
+    const pitchRef = useRef(-0.1);
+    const lastPosRef = useRef(null);
+
+    useEffect(() => {
+        const canvas = gl.domElement;
+
+        // --- Touch ---
+        const onTouchStart = (e) => {
+            if (e.touches.length !== 1) return;
+            lastPosRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        };
+        const onTouchMove = (e) => {
+            if (e.touches.length !== 1 || !lastPosRef.current) return;
+            const touch = e.touches[0];
+            const dx = touch.clientX - lastPosRef.current.x;
+            const dy = touch.clientY - lastPosRef.current.y;
+            yawRef.current -= dx * 0.003;
+            pitchRef.current -= dy * 0.003;
+            pitchRef.current = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitchRef.current));
+            setTouchCameraAngle(yawRef.current, pitchRef.current);
+            lastPosRef.current = { x: touch.clientX, y: touch.clientY };
+            e.preventDefault();
+        };
+        const onTouchEnd = () => { lastPosRef.current = null; };
+
+        // --- Mouse ---
+        const onMouseDown = (e) => {
+            lastPosRef.current = { x: e.clientX, y: e.clientY };
+        };
+        const onMouseMove = (e) => {
+            if (!lastPosRef.current) return;
+            const dx = e.clientX - lastPosRef.current.x;
+            const dy = e.clientY - lastPosRef.current.y;
+            yawRef.current -= dx * 0.003;
+            pitchRef.current -= dy * 0.003;
+            pitchRef.current = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitchRef.current));
+            setTouchCameraAngle(yawRef.current, pitchRef.current);
+            lastPosRef.current = { x: e.clientX, y: e.clientY };
+        };
+        const onMouseUp = () => { lastPosRef.current = null; };
+
+        canvas.addEventListener('touchstart', onTouchStart, { passive: true });
+        canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+        canvas.addEventListener('touchend', onTouchEnd, { passive: true });
+        canvas.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+
+        return () => {
+            canvas.removeEventListener('touchstart', onTouchStart);
+            canvas.removeEventListener('touchmove', onTouchMove);
+            canvas.removeEventListener('touchend', onTouchEnd);
+            canvas.removeEventListener('mousedown', onMouseDown);
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+        };
+    }, [gl, setTouchCameraAngle]);
+
+    return null;
+}
+
+function TouchMarker() {
+    const touchTarget = useAssetGalleryStore(state => state.touchTarget);
+    if (!touchTarget) return null;
+    return (
+        <mesh position={[touchTarget[0], 0.05, touchTarget[2]]}>
+            <cylinderGeometry args={[0.3, 0.3, 0.05, 24]} />
+            <meshStandardMaterial color="#00ff88" transparent opacity={0.7} />
+        </mesh>
+    );
+}
+
 function AssetSections(props) {
 
-    const { data: assets, isLoading: assetsIsLoading, mutate: mutateAssets } = useAssets()
+    // const { data: assets, isLoading: assetsIsLoading, mutate: mutateAssets } = useAssets()
+    const assets = useStore((state) => state.assets);
+    // const setAssets = useStore((state) => state.setAssets);
 
     const galleryTheme = useAssetGalleryStore(state => state.galleryTheme);
 
@@ -452,7 +529,7 @@ function GameCanvas({
 
     const { isFullscreen } = useFullscreen();
 
-    const controlType = useAssetGalleryStore(state => state.controlType);
+    const controlType = useStore(state => state.controlType);
 
     // const [location, setLocation] = useState([0, 0, 0])
 
@@ -510,12 +587,12 @@ function GameCanvas({
 
             <Canvas style={{ zIndex: 1 }} id="gallery-canvas">
 
-                {/* https://codepen.io/ogames/pen/rNmYpdo */}
-                {controlType == "Touch" &&
-                    <OrbitControls
-                    // enabled={!menuOpen}
-                    />
-                }
+                {controlType == "Touch" && (
+                    <>
+                        <TouchControls3D />
+                        <TouchMarker />
+                    </>
+                )}
 
                 <Sky sunPosition={[100, 100, 20]} />
 
@@ -536,7 +613,7 @@ function GameCanvas({
                     gravity={[0, -10, 0]}
                 >
 
-                    {controlType == "Mouse and Keyboard" &&
+                    {(controlType == "Mouse and Keyboard" || controlType == "Touch") &&
                         <Player />
                     }
 

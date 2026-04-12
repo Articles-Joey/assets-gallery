@@ -67,7 +67,17 @@ export const useStore = create()(
 
       debug: false,
       toggleDebug: () => set({ debug: !get().debug }),
-      setDebug: (value) => set({ debug: value })
+      setDebug: (value) => set({ debug: value }),
+
+      assets: [],
+      setAssets: (assets) => set({ assets }),
+
+      controlType: "Mouse and Keyboard",
+      setControlType: (newValue) => {
+        set((prev) => ({
+          controlType: newValue
+        }))
+      },
 
     }),
     {
@@ -79,7 +89,9 @@ export const useStore = create()(
         darkMode: state.darkMode,
         graphicsQuality: state.graphicsQuality,
         landingAnimation: state.landingAnimation,
-        sidebar: state.sidebar
+        sidebar: state.sidebar,
+        assets: state.assets,
+        controlType: state.controlType,
       }),
       onRehydrateStorage: () => (state) => {
         state.setHasHydrated(true)

@@ -128,6 +128,10 @@ const GrassBlades = () => {
 const Ground = () => {
 
     const galleryTheme = useAssetGalleryStore(state => state.galleryTheme);
+    const setTouchTarget = useAssetGalleryStore(state => state.setTouchTarget);
+    const controlType = useStore(state => state.controlType);
+    const pointerDownRef = useRef(null);
+    const TAP_THRESHOLD_SQ = 100; // 10px radius
 
     const [ref] = usePlane(() => ({
         rotation: [-Math.PI / 2, 0, 0], position: [0, -1, 0]
@@ -151,7 +155,26 @@ const Ground = () => {
 
     return (
         <>
-            <mesh ref={ref}>
+            <mesh
+                ref={ref}
+                onPointerDown={(e) => {
+                    if (controlType !== "Touch") return;
+                    pointerDownRef.current = {
+                        screenX: e.nativeEvent.clientX,
+                        screenY: e.nativeEvent.clientY,
+                        point: e.point,
+                    };
+                }}
+                onPointerUp={(e) => {
+                    if (controlType !== "Touch" || !pointerDownRef.current) return;
+                    const dx = e.nativeEvent.clientX - pointerDownRef.current.screenX;
+                    const dy = e.nativeEvent.clientY - pointerDownRef.current.screenY;
+                    if (dx * dx + dy * dy < TAP_THRESHOLD_SQ) {
+                        setTouchTarget([pointerDownRef.current.point.x, 0, pointerDownRef.current.point.z]);
+                    }
+                    pointerDownRef.current = null;
+                }}
+            >
                 <planeGeometry attach='geometry' args={[100, 100]} />
                 <meshStandardMaterial
                     attach="material"

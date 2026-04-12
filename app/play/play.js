@@ -17,7 +17,19 @@ const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
 });
 
-export default function AssetsMuseumGamePage() {
+export default function AssetsMuseumGamePage({
+    assets: initialAssets,
+    lastAssetUpdate,
+    devFailed
+}) {
+
+    const assets = useStore((state) => state.assets);
+    const setAssets = useStore((state) => state.setAssets);
+
+    useEffect(() => {
+        console.log("assets", assets);
+        setAssets(initialAssets);
+    }, [initialAssets]);
 
     const useFallback = useAssetGalleryStore((state) => state.useFallback);
 
@@ -92,7 +104,7 @@ export default function AssetsMuseumGamePage() {
                     <i className='fad fa-cog'></i>
                 </ArticlesButton>
 
-                {useFallback &&
+                {(useFallback || devFailed) &&
                     <ArticlesButton
                         active={menuOpen}
                         variant="danger"
@@ -116,7 +128,8 @@ export default function AssetsMuseumGamePage() {
                 <Menu
                     {...{
                         menuOpen,
-                        reloadScene
+                        reloadScene,
+                        lastAssetUpdate,
                     }}
                 />
             </div>

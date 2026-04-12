@@ -6,6 +6,7 @@ import { Dropdown, DropdownButton } from 'react-bootstrap';
 // import useFullscreen from 'util/useFullScreen';
 import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
 import Link from 'next/link';
+import { useStore } from '@/hooks/useStore';
 // import routes from '@/components/constants/routes';
 
 function PlayerPosition() {
@@ -27,13 +28,15 @@ const Menu = ({
     // requestFullscreen,
     // exitFullscreen,
     menuOpen,
-    reloadScene
+    reloadScene,
+    lastAssetUpdate,
 }) => {
 
     const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
 
-    const controlType = useAssetGalleryStore((state) => state.controlType);
-    const setControlType = useAssetGalleryStore((state) => state.setControlType);
+    const controlType = useStore(state => state.controlType);
+    const setControlType = useStore((state) => state.setControlType);
+    
     const galleryTheme = useAssetGalleryStore((state) => state.galleryTheme);
     const setGalleryTheme = useAssetGalleryStore((state) => state.setGalleryTheme);
 
@@ -46,6 +49,12 @@ const Menu = ({
         <div className={`menu ${menuOpen && `menu-open`}`}>
 
             <div className='container'>
+
+                {lastAssetUpdate &&
+                    <small className='mb-3'>
+                        Last update: {new Date(lastAssetUpdate).toLocaleTimeString()}
+                    </small>
+                }
 
                 <div className="fw-bold">Controls</div>
                 <div className='mb-2'>
