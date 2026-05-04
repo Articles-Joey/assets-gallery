@@ -14,15 +14,17 @@ export const useAudioStore = create()(
 
       audioSettings: {
         enabled: true,
-        backgroundMusicVolume: 15,
-        soundEffectsVolume: 50,
+        game_volume: 50,
+        music_volume: 50,
+        // backgroundMusicVolume: 15,
+        // soundEffectsVolume: 50,
       },
       setAudioSettings: (newValue) => set({ audioSettings: newValue }),
 
     }),
     {
       name: 'audio-store', // name of the item in the storage (must be unique)
-      version: 1,
+      version: 2,
       onRehydrateStorage: () => (state) => {
         state.setHasHydrated(true)
       },

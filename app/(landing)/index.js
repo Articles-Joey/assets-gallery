@@ -12,14 +12,29 @@ import ArticlesButton from '@/components/UI/Button';
 // import { useLocalStorage } from 'util/useLocalStorage';
 import { useAssetGalleryStore } from '@/hooks/useAssetGalleryStore';
 import { useStore } from '@/hooks/useStore';
+
+import logo from '@/app/icon.png'
 // import routes from 'components/constants/routes';
 
 // const Ad = dynamic(() => import('components/Ads/Ad'), {
 //     ssr: false,
 // });
 
+import SessionButton from '@articles-media/articles-dev-box/SessionButton';
+import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
+import NicknameInput from '@articles-media/articles-dev-box/NicknameInput';
+
+import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
+import useUserToken from '@articles-media/articles-dev-box/useUserToken';
+import { useSocketStore } from '@/hooks/useSocketStore';
+
 const ReturnToLauncherButton = dynamic(() =>
     import('@articles-media/articles-dev-box/ReturnToLauncherButton'),
+    { ssr: false }
+);
+
+const Ad = dynamic(() =>
+    import('@articles-media/articles-dev-box/Ad'),
     { ssr: false }
 );
 
@@ -39,7 +54,7 @@ function FlatBackground({ galleryTheme }) {
 //     loading: () => <FlatBackground galleryTheme={"Forest"} />
 // });
 
-const locations = [
+export const locations = [
     {
         name: 'Forest',
         thumb: `${process.env.NEXT_PUBLIC_CDN}games/Assets Gallery/${'Forest.png'}`
@@ -56,33 +71,46 @@ const locations = [
 
 export default function AssetsMuseumLobbyPage() {
 
-    const setShowSettingsModal = useStore(state => state.setShowSettingsModal);
-    const setShowCreditsModal = useStore(state => state.setShowCreditsModal);
-    const setShowInfoModal = useStore(state => state.setShowInfoModal);
+    const socket = useSocketStore(state => state.socket);
+    const connected = useSocketStore(state => state.connected);
 
-    // const darkMode = useStore(state => state.darkMode);
-    // const setDarkMode = useStore(state => state.setDarkMode);
-    const toggleDarkMode = useStore(state => state.toggleDarkMode);
-
+    const darkMode = useStore(state => state.darkMode);
     const landingAnimation = useStore(state => state.landingAnimation);
+    const galleryTheme = useAssetGalleryStore(state => state.galleryTheme);
+    const lobbyDetails = useStore(state => state.lobbyDetails);
 
     const [authorFilter, setAuthorFilter] = useState('Anyone')
     const [typeFilter, setTypeFilter] = useState('Anything')
 
-    const [apiControlsExpanded, setApiControlsExpanded] = useState(true);
+    const {
+        data: userToken,
+        error: userTokenError,
+        isLoading: userTokenLoading,
+        mutate: userTokenMutate
+    } = useUserToken(
+        process.env.NEXT_PUBLIC_GAME_PORT,
+    );
 
-    // const [ assetGalleryTheme, setAssetGalleryTheme ] = useState("Forest")
+    const {
+        data: userDetails,
+        error: userDetailsError,
+        isLoading: userDetailsLoading,
+        mutate: userDetailsMutate
+    } = useUserDetails({
+        token: userToken
+    });
 
-    // const [assetGalleryTheme, setAssetGalleryTheme] = useLocalStorage("game:asset-gallery:theme", "Forest")
+    useEffect(() => {
 
-    // const controlType = useAssetGalleryStore(state => state.controlType);
-    const controlType = useStore(state => state.controlType);
+        if (socket.connected) {
+            socket.emit('join-room', `game:${process.env.NEXT_PUBLIC_GAME_KEY}-landing`);
+        }
 
-    const setControlType = useStore(state => state.setControlType);
-    const galleryTheme = useAssetGalleryStore(state => state.galleryTheme);
-    const setGalleryTheme = useAssetGalleryStore(state => state.setGalleryTheme);
-    const music = useAssetGalleryStore(state => state.music);
-    const setMusic = useAssetGalleryStore(state => state.setMusic);
+        return function cleanup() {
+            socket.emit('leave-room', `game:${process.env.NEXT_PUBLIC_GAME_KEY}-landing`);
+        };
+
+    }, [socket.connected]);
 
     return (
         <div className="assets-gallery-lobby-page">
@@ -111,24 +139,34 @@ export default function AssetsMuseumLobbyPage() {
                 }
             </div>
 
-            <div className="container d-flex justify-content-center">
+            <div className="container d-flex justify-content-center py-3">
 
                 <div style={{ "width": "24rem" }}>
 
-                    <div className='d-none'>
-                        <h1 className='h2'>Community Assets Gallery</h1>
+                    <div className='text-center mb-3'>
 
-                        <p>
-                            View assets submitted via the <span className='text-decoration-underline'>
-                                <Link prefetch={false} href={'https://articles.media/community/assets'}>/community/assets</Link>
-                            </span> page in a 3D walkable world.
-                        </p>
+                        <img
+                            src={logo.src}
+                            alt="Game Logo"
+                            className="mb-2"
+                            height={150}
+                            style={{
+                                objectFit: "contain",
+                                width: "100%"
+                            }}
+                        >
+                        </img>
+
+                        <h1 className='mb-0'>Assets Gallery</h1>
+
                     </div>
 
                     <div className="card card-articles card-sm mb-4">
 
                         <div className="card-header">
-                            <b>Community Assets Gallery</b>
+                            <NicknameInput
+                                useStore={useStore}
+                            />
                         </div>
 
                         <div className="card-body">
@@ -138,14 +176,7 @@ export default function AssetsMuseumLobbyPage() {
                                 <span className='small'>More Filters will be enabled when more assets are available.</span>
                             </div> */}
 
-                            <div className="ratio ratio-16x9 bg-black mb-3 border border-2 border-dark">
-                                <img
-                                    className='w-100 h-100'
-                                    style={{ objectFit: 'cover' }}
-                                    src={locations?.find(obj => obj.name == galleryTheme)?.thumb}
-                                    alt=""
-                                />
-                            </div>
+                            <ScenePicker />
 
                             {/* <div className="small">Scene</div>
                             <div className='mb-3'>
@@ -208,10 +239,27 @@ export default function AssetsMuseumLobbyPage() {
 
                             </div> */}
 
+                            <div className='bg-black p-1 mb-3 fw-bold'>
+                                {connected ?
+                                    <>
+                                        <div className="text-success">
+                                            Online services are available. {lobbyDetails?.players?.length || 0} player(s) currently on the site.
+                                        </div>
+                                    </>
+                                    :
+                                    <>
+                                        <div className="text-warning">
+                                            Connecting to online services...
+                                        </div>
+                                    </>
+                                }
+                            </div>
+
                             {/* <hr /> */}
 
                             <div className='d-flex'>
 
+                                {/* Authors */}
                                 <div className='me-2'>
                                     <div className="small">Authors</div>
                                     <Dropdown className="dropdown-articles" drop={'down'}>
@@ -261,6 +309,7 @@ export default function AssetsMuseumLobbyPage() {
                                     </Dropdown>
                                 </div>
 
+                                {/* Asset Types */}
                                 <div>
                                     <div className="small">Asset Types</div>
                                     <Dropdown className="dropdown-articles" drop={'down'}>
@@ -331,68 +380,21 @@ export default function AssetsMuseumLobbyPage() {
 
                         <div className="card-footer d-flex flex-wrap justify-content-center">
 
-                            <div className='d-flex w-50'>
-                                <ArticlesButton
-                                    className={`w-100`}
-                                    small
-                                    onClick={() => {
-                                        setShowSettingsModal(true)
-                                    }}
-                                >
-                                    <i className="fad fa-cog"></i>
-                                    Settings
-                                </ArticlesButton>
-                                <ArticlesButton
-                                    className={``}
-                                    small
-                                    onClick={() => {
-                                        toggleDarkMode();
-                                    }}
-                                >
-                                    <i className="fad fa-palette"></i>
-                                </ArticlesButton>
-                            </div>
-
-                            <ArticlesButton
-                                className={`w-50`}
-                                small
-                                onClick={() => {
-                                    setShowInfoModal(true)
-                                }}
-                            >
-                                <i className="fad fa-info-square"></i>
-                                Info
-                            </ArticlesButton>
-
-                            <Link href={'https://github.com/Articles-Joey/assets-gallery'} className='w-50' target="_blank" rel="noopener noreferrer">
-                                <ArticlesButton
-                                    className={`w-100`}
-                                    small
-                                    onClick={() => {
-
-                                    }}
-                                >
-                                    <i className="fab fa-github"></i>
-                                    Github
-                                </ArticlesButton>
-                            </Link>
-
-                            <ArticlesButton
-                                className={`w-50`}
-                                small
-                                onClick={() => {
-                                    setShowCreditsModal(true);
-                                }}
-                            >
-                                <i className="fad fa-users"></i>
-                                Credits
-                            </ArticlesButton>
+                            <GameMenuPrimaryButtonGroup
+                                useStore={useStore}
+                                type="Landing"
+                            />
 
                         </div>
 
                     </div>
 
                     <div className='mb-3'>
+                        <SessionButton
+                            port={process.env.NEXT_PUBLIC_GAME_PORT}
+                            friendsButton={true}
+                        />
+
                         <ReturnToLauncherButton />
                     </div>
 
@@ -407,7 +409,7 @@ export default function AssetsMuseumLobbyPage() {
                             </span>
                         </a> */}
                         <a
-                            href="https://articles.media/community/assets"
+                            href="https://articles.media/community/assets?utm_source=assets-gallery"
                             target='_blank'
                             rel='noopener noreferrer'
                         >
@@ -419,10 +421,58 @@ export default function AssetsMuseumLobbyPage() {
 
                 </div>
 
-                {/* <Ad section={"Games"} section_id={'Assets Museum'} /> */}
+                <Ad
+                    style="Default"
+                    section={"Games"}
+                    section_id={process.env.NEXT_PUBLIC_GAME_NAME}
+                    darkMode={darkMode ? true : false}
+                    user_ad_token={userToken}
+                    userDetails={userDetails}
+                    userDetailsLoading={userDetailsLoading}
+                />
 
             </div>
 
         </div>
     );
+}
+
+function ScenePicker() {
+
+    const galleryTheme = useAssetGalleryStore(state => state.galleryTheme);
+    const setGalleryTheme = useAssetGalleryStore(state => state.setGalleryTheme);
+
+    return (
+        <div className='ScenePicker mb-3 card card-articles card-sm'>
+
+            <div className="ratio ratio-16x9 bg-black border border-2 border-dark">
+                <img
+                    className='w-100 h-100'
+                    style={{ objectFit: 'cover' }}
+                    src={locations?.find(obj => obj.name == galleryTheme)?.thumb}
+                    alt=""
+                />
+            </div>
+
+            {/* <div className="small">Scene</div> */}
+            <div className='border d-flex justify-content-center p-1'>
+                {locations.map(obj => {
+                    return (
+                        <ArticlesButton
+                            key={obj.name}
+                            className={` ${galleryTheme == obj.name && 'active'}`}
+                            small
+                            onClick={() => {
+                                setGalleryTheme(obj.name)
+                            }
+                            }
+                        >
+                            {obj.name}
+                        </ArticlesButton>
+                    )
+                })}
+
+            </div>
+        </div>
+    )
 }

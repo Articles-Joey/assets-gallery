@@ -2,12 +2,16 @@ import { useFrame, useThree } from "@react-three/fiber"
 import { useSphere } from "@react-three/cannon"
 import { useEffect, useRef, useState } from "react"
 import { Vector3, Raycaster } from "three"
+import { MathUtils } from 'three'
 import { useKeyboard } from "@/hooks/useKeyboard"
 
 import { useAssetGalleryStore } from '@/hooks/useAssetGalleryStore';
 import SpacesuitModel from '@/components/Models/Spacesuit';
 import { useStore } from "@/hooks/useStore"
+import { useSocketStore } from "@/hooks/useSocketStore"
+import { useSearchParams } from "next/navigation"
 
+const { degToRad } = MathUtils
 const JUMP_FORCE = 4;
 const SPEED = 4;
 const THIRD_PERSON_MIN_DISTANCE = 2;
@@ -19,9 +23,12 @@ const CAMERA_GROUND_OFFSET = 0.3;
 const SCROLL_SENSITIVITY = 0.5;
 
 export const Player = () => {
+    const searchParams = useSearchParams()
+    const params = Object.fromEntries(searchParams.entries());
+    const { server } = params
 
     const { moveBackward, moveForward, moveRight, moveLeft, jump, shift, crouch, cameraView } = useKeyboard()
-    
+
     const [currentAnimation, setCurrentAnimation] = useState('Idle')
     const modelRef = useRef()
     const prevCameraView = useRef(false)
@@ -31,12 +38,21 @@ export const Player = () => {
     const setIsThirdPerson = useAssetGalleryStore(state => state.setIsThirdPerson)
     const cameraDistance = useAssetGalleryStore(state => state.cameraDistance)
     const setCameraDistance = useAssetGalleryStore(state => state.setCameraDistance)
+    const setPlayerLocation = useAssetGalleryStore(state => state.setPlayerLocation)
+    const lastLocationRef = useRef(new Vector3())
+    const isThirdPersonRef = useRef(isThirdPerson)
+    useEffect(() => {
+        isThirdPersonRef.current = isThirdPerson
+    }, [isThirdPerson])
+
+    const socket = useSocketStore(state => state.socket)
+    const connected = useSocketStore(state => state.connected)
 
     // Sync store cameraDistance (changed by menu slider) into the ref used by useFrame
     useEffect(() => {
         cameraDistanceRef.current = cameraDistance
     }, [cameraDistance])
-    
+
     const controlType = useStore(state => state.controlType)
     const touchTarget = useAssetGalleryStore(state => state.touchTarget)
     const setTouchTarget = useAssetGalleryStore(state => state.setTouchTarget)
@@ -58,6 +74,8 @@ export const Player = () => {
     const setPosition = useAssetGalleryStore((state) => state.setPosition);
     const position = useAssetGalleryStore((state) => state.position);
 
+    const lastSentPosRef = useRef({ x: 0, y: 0, z: 0, rotation: 0, action: '' })
+
     useEffect(() => {
         // Save ref and api to the store
         setPlayer(ref, api);
@@ -69,7 +87,7 @@ export const Player = () => {
 
         // Cleanup subscription on unmount
         return () => unsubscribe();
-    }, [ref, api, setPlayer, setPosition]);
+    }, [ref, api, setPlayer, setPosition, currentAnimation]);
 
     const vel = useRef([0, 0, 0])
     const canJump = useRef(true)
@@ -189,7 +207,7 @@ export const Player = () => {
         const isMoving = moveForward || moveBackward || moveLeft || moveRight
         const isRunning = isMoving && shift
         const isWalking = isMoving && !shift
-        
+
         if (jump && Math.abs(vel.current[1]) > 0.05) {
             setCurrentAnimation('Jump')
         } else if (isRunning) {
@@ -233,7 +251,8 @@ export const Player = () => {
             camera.position.copy(
                 new Vector3(
                     position[0],
-                    position[1] / (crouch ? 2 : 1),
+                    // position[1] / (crouch ? 2 : 1),
+                    position[1] - 0.15,
                     position[2]
                 )
             )
@@ -242,7 +261,7 @@ export const Player = () => {
         // Update player model position and rotation
         if (modelRef.current) {
             modelRef.current.position.set(position[0], position[1] - 1, position[2])
-            
+
             // Calculate model rotation based on movement direction
             if (isMoving) {
                 const frontVector = new Vector3(
@@ -255,13 +274,13 @@ export const Player = () => {
                     0,
                     0
                 )
-                
+
                 const moveDirection = new Vector3()
                 moveDirection
                     .subVectors(frontVector, sideVector)
                     .normalize()
                     .applyEuler(camera.rotation)
-                
+
                 if (moveDirection.length() > 0) {
                     const targetRotation = Math.atan2(moveDirection.x, moveDirection.z)
                     modelRef.current.rotation.y = targetRotation
@@ -300,20 +319,75 @@ export const Player = () => {
             canJump.current = false
         }
 
+        // Unified socket emit (TP uses model rotation, FP uses camera yaw)
+        if (connected && socket) {
+            const [px, py, pz] = pos.current
+            let yaw
+            if (isThirdPerson) {
+                yaw = modelRef.current?.rotation.y || 0
+            } else {
+                // Project camera forward onto XZ plane and derive yaw with atan2,
+                // matching the same formula used for the TP model rotation
+                const forward = new Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
+                yaw = Math.atan2(forward.x, forward.z)
+            }
+            const last = lastSentPosRef.current
+            const hasChanged =
+                px.toFixed(2) !== last.x.toFixed(2) ||
+                py.toFixed(2) !== last.y.toFixed(2) ||
+                pz.toFixed(2) !== last.z.toFixed(2) ||
+                yaw.toFixed(2) !== last.rotation.toFixed(2) ||
+                currentAnimation !== last.action
+            if (hasChanged) {
+                socket.emit(`game:${process.env.NEXT_PUBLIC_GAME_KEY}:move`, {
+                    server: server || 1,
+                    x: px,
+                    y: py,
+                    z: pz,
+                    action: currentAnimation,
+                    rotation: [0, yaw, 0]
+                })
+                lastSentPosRef.current = { x: px, y: py, z: pz, rotation: yaw, action: currentAnimation }
+            }
+        }
+
+        // const [posX, posY, posZ] = pos.current;
+        // const newLocation = new Vector3(posX, posY, posZ)
+
+        // setPlayerLocation(newLocation)
+
+        // if (JSON.stringify(lastLocationRef.current) !== JSON.stringify(newLocation)) {
+        //     // console.log(newLocation, lastLocationRef.current)
+        //     setPlayerLocation(newLocation)
+
+        //     if (connected) {
+        //         socket.emit(`game:${process.env.NEXT_PUBLIC_GAME_KEY}:move`, {
+        //             server: server || 1,
+        //             x: newLocation.x,
+        //             y: newLocation.y,
+        //             z: newLocation.z,
+        //             action: currentAnimation,
+        //             rotation: [0, degToRad(modelRef.current?.rotation.y || 0), 0]
+        //         })
+        //     }
+
+        //     lastLocationRef.current = newLocation
+        // }
+
     })
 
     return (
         <>
             <mesh ref={ref}></mesh>
-            {isThirdPerson && (
-                <group ref={modelRef}>
-                    <SpacesuitModel 
-                        action={currentAnimation}
-                        speed={shift ? 1.5 : 1}
-                        scale={0.5}
-                    />
-                </group>
-            )}
+
+            <group ref={modelRef}>
+                {isThirdPerson && (<SpacesuitModel
+                    action={currentAnimation}
+                    speed={shift ? 1.5 : 1}
+                    scale={0.5}
+                />)}
+            </group>
+            
         </>
     )
 }

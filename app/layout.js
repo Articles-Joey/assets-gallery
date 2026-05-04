@@ -31,8 +31,8 @@ import LayoutClient from './layoutClient';
 // });
 
 export const metadata = {
-  title: "Ice Slide",
-  description: "",
+  title: "Assets Gallery",
+  description: "View assets submitted via the Articles Media Community Assets page in a 3D world.",
 };
 
 export default function RootLayout({ children }) {

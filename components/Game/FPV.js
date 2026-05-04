@@ -17,7 +17,7 @@ export const FPV = ({ location, setLocation, menuOpen }) => {
 
     return (
         <PointerLockControls
-            selector="canvas"
+            selector="#gallery-canvas"
             minPolarAngle={0.2}
             maxPolarAngle={Math.PI - 0.2}
         />

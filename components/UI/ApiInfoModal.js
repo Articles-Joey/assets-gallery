@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap"
 
 import ArticlesButton from "./Button";
 
-export default function GameInfoModal({
+export default function ApiInfoModal({
     show,
     setShow,
     credits
@@ -14,7 +14,6 @@ export default function GameInfoModal({
 
     return (
         <>
-
             <Modal
                 className="articles-modal games-info-modal"
                 size='md'
@@ -30,14 +29,14 @@ export default function GameInfoModal({
             >
 
                 <Modal.Header closeButton>
-                    <Modal.Title>Game Info</Modal.Title>
+                    <Modal.Title>API Info</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body className="flex-column p-0">
 
                    <div className="p-3">
-                    Explore the assets that are submitted and approved from <a href="https://articles.media/community/assets" target="_blank" rel="noopener noreferrer">Articles Media Community Assets</a> in a three dimensional world.
-                   </div>
+                        The local API server is not running. The gallery is using a fallback remote API.
+                    </div>
 
                 </Modal.Body>
 

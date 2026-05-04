@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useLayoutEffect, useMemo, memo, useCallback } from 'react';
 
 import { Physics, useBox } from '@react-three/cannon';
-import { Sky, Html, OrbitControls, Text, Image } from '@react-three/drei';
+import { Sky, Html, OrbitControls, Text, Image, Stats } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 
 import Ground from './Ground'
@@ -24,12 +24,13 @@ import { useAssetGalleryStore } from '@/hooks/useAssetGalleryStore';
 // import { useControlsStore } from '../Glass Ceiling/hooks/useGameStore';
 
 // import ArticlesButton from '@/components/UI/Button';
-import TouchControls from './TouchControls';
-import CameraZoomIndicator from '@/components/UI/CameraZoomIndicator';
+// import TouchControls from './TouchControls';
+// import CameraZoomIndicator from '@/components/UI/CameraZoomIndicator';
 import { degToRad } from 'three/src/math/MathUtils';
 
 import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
 import { useStore } from '@/hooks/useStore';
+import SocketPlayers from './SocketPlayers';
 
 function Box(props) {
 
@@ -426,7 +427,7 @@ function AssetSections(props) {
 
                         <GallerySection
                             scale={1}
-                            position={[-2.5, -0.5, 0]}
+                            position={[-2.5, -0.599, 0]}
                             section_i={i}
                         />
 
@@ -530,6 +531,7 @@ function GameCanvas({
     const { isFullscreen } = useFullscreen();
 
     const controlType = useStore(state => state.controlType);
+    const showStats = useStore((state) => state?.debugConfig?.showStats);
 
     // const [location, setLocation] = useState([0, 0, 0])
 
@@ -580,112 +582,120 @@ function GameCanvas({
     // }, []);
 
     return (
-        <div
-            className={`canvas-wrap ${isFullscreen && 'fullscreen'}`}
-            id={"canvas-wrap"}
-        >
-
-            <Canvas style={{ zIndex: 1 }} id="gallery-canvas">
-
-                {controlType == "Touch" && (
-                    <>
-                        <TouchControls3D />
-                        <TouchMarker />
-                    </>
-                )}
-
-                <Sky sunPosition={[100, 100, 20]} />
-
-                <ambientLight intensity={1.5} />
-
-                {controlType == "Mouse and Keyboard" &&
-                    <FPV
-                    // location={location}
-                    // setLocation={setLocation}
-                    // menuOpen={menuOpen}
-                    />
-                }
-
-                <AssetSections />
-
-                <Physics
-                    iterations={10}
-                    gravity={[0, -10, 0]}
-                >
-
-                    {/* {(controlType == "Mouse and Keyboard" || controlType == "Touch") &&
-                        <Player />
-                    } */}
-                    <Player />
-
-                    {/* <Platform /> */}
-
-                    {/* <Platform position={[5, 0, 0]} /> */}
-
-                    {/* <Platform position={[10, 0, 0]} /> */}
-
-                    {/* {galleryTheme == 'Museum' &&
-                        <GallerySection
-                            scale={1}
-                            position={[0, 0, 0]}
+        <>
+            {/* <div
+                className={`canvas-wrap ${isFullscreen && 'fullscreen'}`}
+                id={"canvas-wrap"}
+            > */}
+    
+                <Canvas shadows style={{ zIndex: 1 }} id="gallery-canvas">
+    
+                    {showStats && <>
+                        <Stats className="stats-overlay" />
+                    </>}
+    
+                    {controlType == "Touch" && (
+                        <>
+                            <TouchControls3D />
+                            <TouchMarker />
+                        </>
+                    )}
+    
+                    <Sky sunPosition={[100, 100, 20]} />
+    
+                    <ambientLight intensity={1.5} />
+    
+                    {controlType == "Mouse and Keyboard" &&
+                        <FPV
+                        // location={location}
+                        // setLocation={setLocation}
+                        // menuOpen={menuOpen}
                         />
-                    } */}
+                    }
+    
+                    <AssetSections />
+    
+                    <Physics
+                        iterations={10}
+                        gravity={[0, -10, 0]}
+                    >
+    
+                        {/* {(controlType == "Mouse and Keyboard" || controlType == "Touch") &&
+                            <Player />
+                        } */}
+                        <Player />
 
-                    {/* {galleryTheme == 'Forest' &&
-                        memoizedTrees
-                    } */}
-
-                    {/* {galleryTheme == 'Alley' &&
-                        [...Array(10)].map((item, i) =>
-                            <group key={i}>
-                                <Alley
-                                    scale={0.15}
-                                    position={[1, -0.4, (-36 + i * 5.90)]}
-                                    rotation={[0, Math.PI / 1, 0]}
-                                // zIndexRange={2}
-                                />
-                                <Alley
-                                    scale={0.15}
-                                    position={[-1, -0.4, (-36 + i * 5.90)]}
-                                // zIndexRange={2}
-                                />
-                            </group>
-                        )
-                    } */}
-
-                    {/* {galleryTheme == 'Museum' &&
-                        [...Array(10)].map((item, i) => <>
-                            <group key={i}>
-                                <mesh
-                                    scale={1}
-                                    position={[3.5, 0, (-39.3 + 4 * i)]}
-                                >
-                                    <boxGeometry args={[0.1, 1, 0.1]} />
-                                    <meshStandardMaterial
-                                        color={"#000"}
+                        <SocketPlayers />
+    
+                        {/* <Platform /> */}
+    
+                        {/* <Platform position={[5, 0, 0]} /> */}
+    
+                        {/* <Platform position={[10, 0, 0]} /> */}
+    
+                        {/* {galleryTheme == 'Museum' &&
+                            <GallerySection
+                                scale={1}
+                                position={[0, 0, 0]}
+                            />
+                        } */}
+    
+                        {/* {galleryTheme == 'Forest' &&
+                            memoizedTrees
+                        } */}
+    
+                        {/* {galleryTheme == 'Alley' &&
+                            [...Array(10)].map((item, i) =>
+                                <group key={i}>
+                                    <Alley
+                                        scale={0.15}
+                                        position={[1, -0.4, (-36 + i * 5.90)]}
+                                        rotation={[0, Math.PI / 1, 0]}
+                                    // zIndexRange={2}
                                     />
-                                </mesh>
-                            </group>
-                        </>)
-                    } */}
-
-                    <Ground />
-
-                </Physics>
-
-            </Canvas>
-
-            <div className='absolute centered cursor noselect'>+</div>
-
-            <CameraZoomIndicator />
-
-            {/* {controlType == "Touch" &&
-                <TouchControls
-                    touchControlsEnabled={true}
-                />
-            } */}
-
-        </div>
+                                    <Alley
+                                        scale={0.15}
+                                        position={[-1, -0.4, (-36 + i * 5.90)]}
+                                    // zIndexRange={2}
+                                    />
+                                </group>
+                            )
+                        } */}
+    
+                        {/* {galleryTheme == 'Museum' &&
+                            [...Array(10)].map((item, i) => <>
+                                <group key={i}>
+                                    <mesh
+                                        scale={1}
+                                        position={[3.5, 0, (-39.3 + 4 * i)]}
+                                    >
+                                        <boxGeometry args={[0.1, 1, 0.1]} />
+                                        <meshStandardMaterial
+                                            color={"#000"}
+                                        />
+                                    </mesh>
+                                </group>
+                            </>)
+                        } */}
+    
+                        <Ground />
+    
+                    </Physics>
+    
+                </Canvas>
+    
+                {/* <div className='absolute centered cursor noselect'>+</div> */}
+    
+                {/* <CameraZoomIndicator /> */}
+    
+                {/* {controlType == "Touch" &&
+                    <TouchControls
+                        touchControlsEnabled={true}
+                    />
+                } */}
+    
+            {/* </div> */}
+        </>
     );
 }
 

@@ -13,6 +13,8 @@ import { useRouter, usePathname } from 'next/navigation';
 // import axios from "axios";
 
 import { useSocketStore } from "@/hooks/useSocketStore";
+import { useStore } from '@/hooks/useStore';
+import { useGameStore } from '@/hooks/useGameStore';
 
 // SocketContextControl
 export default function SocketLogicHandler(props) {
@@ -26,6 +28,9 @@ export default function SocketLogicHandler(props) {
     const connectSocket = useSocketStore((state) => state.connectSocket)
     const disconnectSocket = useSocketStore((state) => state.disconnectSocket)
     const setTotalUsers = useSocketStore((state) => state.setTotalUsers)
+
+    const lobbyDetails = useStore(state => state.lobbyDetails)
+    const setLobbyDetails = useStore((state) => state.setLobbyDetails)
 
     const connected = useSocketStore((state) => state.connected)
     const setConnected = useSocketStore((state) => state.setConnected)
@@ -84,7 +89,7 @@ export default function SocketLogicHandler(props) {
         // Makes sure connect is only called once during reactStrictMode
         if (!initialized.current) {
             initialized.current = true
-            // connectSocket()
+            connectSocket()
         }
 
         // if (!socket.connected) return
@@ -136,6 +141,20 @@ export default function SocketLogicHandler(props) {
         console.log(`[📶 Socket] Page change emit`)
         socket.emit('activePage', pathname);
 
+        socket.on(`landing-details`, function (msg) {
+            console.log(`landing-details`, msg)
+
+            if (JSON.stringify(msg) !== JSON.stringify(lobbyDetails)) {
+                setLobbyDetails(msg)
+            }
+        });
+
+        socket.on(`game-update`, function (msg) {
+            // console.log(`game-update`, msg)
+            const setGameState = useGameStore.getState().setGameState
+            setGameState(msg)
+        });
+
         // router.events.on('routeChangeStart', handleRouteChange)
 
         return () => {
@@ -144,6 +163,8 @@ export default function SocketLogicHandler(props) {
             socket.off('force-page');
             socket.off('roomsList');
             socket.off('userCount', userCount);
+            socket.off(`landing-details`);
+            socket.off(`game-update`);
             // router.events.off('routeChangeStart', handleRouteChange)
         };
 

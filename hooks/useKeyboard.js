@@ -29,16 +29,11 @@ export const useKeyboard = () => {
         shift: false,
         crouch: false,
         cameraView: false,
-		dirt: false,
-		grass: false,
-		glass: false,
-		wood: false,
-		log: false,
 	})
 
 	const handleKeyDown = useCallback((e) => {
 		const action = actionByKey(e.code)
-        console.log("test")
+        // console.log("test")
 		if (action) {
 			setActions((prev) => {
 				return ({
@@ -51,7 +46,7 @@ export const useKeyboard = () => {
 
 	const handleKeyUp = useCallback((e) => {
 		const action = actionByKey(e.code)
-        console.log("test")
+        // console.log("test")
 		if (action) {
 			setActions((prev) => {
 				return ({

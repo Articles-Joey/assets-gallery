@@ -1,5 +1,16 @@
 @use "@/styles/components/global.scss" as *;
 
+[data-bs-theme="dark"] {
+    .assets-gallery-lobby-page {
+        .background-wrap {
+            img {
+                filter: blur(3px) brightness(0.5);
+                transform: scale(1.2);
+            }
+        }
+    }
+}
+
 .assets-gallery-lobby-page {
     min-height: calc(100vh - 0px);
     display: flex;
@@ -30,6 +41,25 @@
 
         @include media-breakpoint-up(lg) {
             display: block;
+        }
+    }
+
+    .ScenePicker {
+        // background-color: aquamarine;
+        // padding: 0.25rem;
+
+        @include media-breakpoint-up(lg) {
+            position: absolute;
+            left: calc(-220px - 1rem);
+            width: 220px;
+            // background-color: aquamarine;
+            // background-color: red;
+            top: 50%;
+            transform: translateY(-50%);
+            
+            .ratio {
+                border-radius: 5px;
+            }
         }
     }
 }

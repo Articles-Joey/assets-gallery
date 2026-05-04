@@ -1,16 +1,25 @@
 "use client"
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAssetGalleryStore } from "@/hooks/useAssetGalleryStore";
+import { useAudioStore } from "@/hooks/useAudioStore";
 
 export default function AudioManager() {
 
     const galleryTheme = useAssetGalleryStore(state => state.galleryTheme);
-    const music = useAssetGalleryStore(state => state.music);
+    // const music = useAssetGalleryStore(state => state.music);
+    const enabled = useAudioStore(state => state.audioSettings.enabled);
+
+    const game_volume = useAudioStore(state => state.audioSettings.game_volume);
+    const musicRef = useRef(null);
 
     useEffect(() => {
 
-        if (!galleryTheme || !music) {
+        if (!galleryTheme || !enabled) {
+            if (musicRef.current) {
+                musicRef.current.pause();
+                musicRef.current = null;
+            }
             return
         }
 
@@ -33,20 +42,43 @@ export default function AudioManager() {
         if (!musicElement) return
 
         musicElement.currentTime = 0
-        // ping.volume = clamp(velocity / 20, 0, 1)
-        musicElement.play()
+        musicElement.volume = Math.max(0, Math.min(1, game_volume / 100));
+        musicElement.loop = true;
 
-        musicElement.onended = function () {
-            console.log("audio ended")
-            musicElement.currentTime = 0
-            musicElement.play()
+        const startAudio = () => {
+            musicElement.play().catch(err => {
+                // If it fails, we wait for the next user interaction on the window
+                console.warn("Audio autoplay blocked, waiting for interaction...");
+                window.addEventListener('click', startAudio, { once: true });
+                window.addEventListener('keydown', startAudio, { once: true });
+                window.addEventListener('touchstart', startAudio, { once: true });
+            });
         };
 
+        startAudio();
+
+        musicRef.current = musicElement;
+
         return () => {
+            window.removeEventListener('click', startAudio);
+            window.removeEventListener('keydown', startAudio);
+            window.removeEventListener('touchstart', startAudio);
             musicElement.pause();
+            musicElement.src = "";
+            musicElement.load();
+            if (musicRef.current === musicElement) {
+                musicRef.current = null;
+            }
         }
 
-    }, [galleryTheme, music])
+    }, [galleryTheme, enabled])
+
+    // Update volume dynamically without restarting the tracks
+    useEffect(() => {
+        if (musicRef.current) {
+            musicRef.current.volume = Math.max(0, Math.min(1, game_volume / 100));
+        }
+    }, [game_volume])
 
     return null;
 }

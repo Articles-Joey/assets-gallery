@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap"
 
 import ArticlesButton from "./Button";
 
-export default function GameInfoModal({
+export default function ControlsModal({
     show,
     setShow,
     credits
@@ -16,7 +16,7 @@ export default function GameInfoModal({
         <>
 
             <Modal
-                className="articles-modal games-info-modal"
+                className="articles-modal controls-modal"
                 size='md'
                 show={showModal}
                 centered
@@ -30,14 +30,14 @@ export default function GameInfoModal({
             >
 
                 <Modal.Header closeButton>
-                    <Modal.Title>Game Info</Modal.Title>
+                    <Modal.Title>Controls</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body className="flex-column p-0">
 
-                   <div className="p-3">
-                    Explore the assets that are submitted and approved from <a href="https://articles.media/community/assets" target="_blank" rel="noopener noreferrer">Articles Media Community Assets</a> in a three dimensional world.
-                   </div>
+                    <div className="p-3">
+                        You can navigate the world using either mouse and keyboard, or click/touch and drag controls.
+                    </div>
 
                 </Modal.Body>
 
