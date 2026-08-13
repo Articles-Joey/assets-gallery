@@ -16,7 +16,7 @@ import "@articles-media/articles-gamepad-helper/dist/articles-gamepad-helper.css
 
 import SocketLogicHandler from "@/components/SocketLogicHandler";
 import AudioManager from '@/components/Game/AudioManager';
-import GlobalClientModals from '@/components/UI/GlobalClientModals';
+// import GlobalClientModals from '@/components/UI/GlobalClientModals';
 import { Suspense } from 'react';
 import LayoutClient from './layoutClient';
 
@@ -41,23 +41,16 @@ export default function RootLayout({ children }) {
 
       <head>
 
-        <link
-          rel="stylesheet"
-          href={`${process.env.NEXT_PUBLIC_CDN}fonts/fontawsome/css/all.min.css`}
-        />
-
       </head>
 
-      <body
-      // className={`${geistSans.variable} ${geistMono.variable}`}
-      >
+      <body>
 
         <LayoutClient />
 
         <Suspense>
           <SocketLogicHandler />
           <AudioManager />
-          <GlobalClientModals />
+          {/* <GlobalClientModals /> */}
         </Suspense>
 
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
