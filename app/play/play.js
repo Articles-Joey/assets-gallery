@@ -18,7 +18,6 @@ import LeftPanelContent from '@/components/UI/LeftPanelContent';
 import classNames from 'classnames';
 import CameraZoomIndicator from '@/components/UI/CameraZoomIndicator';
 import { set } from 'date-fns';
-import { useSearchParams } from 'next/navigation';
 import { useSocketStore } from '@/hooks/useSocketStore';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
@@ -28,12 +27,9 @@ const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
 export default function AssetsMuseumGamePage({
     assets: initialAssets,
     lastAssetUpdate,
-    devFailed
+    devFailed,
+    server
 }) {
-    const searchParams = useSearchParams()
-    const params = Object.fromEntries(searchParams.entries());
-    const { server } = params
-
     const socket = useSocketStore(state => state.socket);
     const connected = useSocketStore(state => state.connected);
 

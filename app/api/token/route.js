@@ -1,22 +1,14 @@
-// import { ObjectId } from 'mongodb';
 import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
-// import { NextResponse } from 'next/server';
-// import clientPromise from '@/util/mongodb';
+import { NextResponse, connection } from 'next/server';
 
-// This will only work when called on a subdomain, not a partner OAuth application
+export async function GET() {
 
-export async function GET(req) {
+    await connection();
+
     try {
 
-        // const { searchParams } = new URL(req.url);
-        // const searchParamsObject = Object.fromEntries(searchParams.entries());
-
         const cookieStore = await cookies();
-
-        const session_token = cookieStore.get('sess')?.value
-
-        const oauth_token = session_token;
+        const session_token = cookieStore.get('sess')?.value;
 
         if (!session_token) {
             return NextResponse.json({ error: 'No session token found' }, { status: 400 });
@@ -26,8 +18,8 @@ export async function GET(req) {
         
     } catch (error) {
 
-        console.error("Error in GET /api/auth/oauth/articles/details:", error);
-        return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });
+        console.error("Error in GET /api/token:", error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 
 }

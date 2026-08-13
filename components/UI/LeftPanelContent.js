@@ -6,6 +6,7 @@ import GameDetailsPanel from "./GameDetailsPanel";
 
 import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
 import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
+import { useRouter } from "next/navigation";
 
 function LeftPanelContent(props) {
 
@@ -24,6 +25,7 @@ function LeftPanelContent(props) {
                     <GameMenuPrimaryButtonGroup 
                         useStore={useStore}
                         type="GameMenu"
+                        useRouter={useRouter}
                     />
 
                 </div>

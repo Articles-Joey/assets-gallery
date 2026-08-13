@@ -49,17 +49,22 @@ async function fetchAssets() {
     return { data, fetchedAt: Date.now(), devFailed };
 }
 
-export default async function Page() {
-
+async function GamePageContent() {
     const { data: assets, fetchedAt: lastAssetUpdate, devFailed } = await fetchAssets();
 
     return (
+        <GamePage
+            assets={assets}
+            lastAssetUpdate={lastAssetUpdate}
+            devFailed={devFailed}
+        />
+    )
+}
+
+export default function Page() {
+    return (
         <Suspense fallback={<div>Loading...</div>}>
-            <GamePage
-                assets={assets}
-                lastAssetUpdate={lastAssetUpdate}
-                devFailed={devFailed}
-            />
+            <GamePageContent />
         </Suspense>
     )
 }
