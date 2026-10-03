@@ -30,6 +30,7 @@ import { degToRad } from 'three/src/math/MathUtils';
 
 import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
 import { useStore } from '@/hooks/useStore';
+import MuiBox from '@mui/material/Box';
 import SocketPlayers from './SocketPlayers';
 
 function Box(props) {
@@ -58,7 +59,7 @@ function Box(props) {
                     // zIndexRange={1}
                     onOcclude={setVisible}
                 >
-                    <div className="w-100 h-100">{props.html}</div>
+                    <MuiBox sx={{ width: "100%", height: "100%" }}>{props.html}</MuiBox>
                     {/* <Slider style={{ width: 100 }} min={0.5} max={1} step={0.01} value={size} onChange={set} /> */}
                 </Html>
             </mesh>
@@ -101,7 +102,7 @@ function AssetSectionImageAsset({ asset_obj, ...props }) {
                     // zIndexRange={1}
                     onOcclude={setVisible}
                 >
-                    <div className="w-100 h-100">{props.html}</div>
+                    <MuiBox sx={{ width: "100%", height: "100%" }}>{props.html}</MuiBox>
                     {/* <Slider style={{ width: 100 }} min={0.5} max={1} step={0.01} value={size} onChange={set} /> */}
                 </Html>}
 
@@ -345,27 +346,25 @@ function AssetSections(props) {
                         position={[2.5, 0.5, 0]}
                         rotation={[0, -Math.PI / 2, 0]}
                         html={
-                            <div className="">
+                            <MuiBox>
                                 {/* <span>Asset</span>
                             <div className="small">{asset_obj._id}</div> */}
-                                <img
+                                <MuiBox component="img"
                                     // src={asset_obj.file.location} 
                                     src={`${process.env.NEXT_PUBLIC_CDN}${asset_obj?.file?.thumbnail?.key}`}
-                                    className="img-fluid"
                                     loading="lazy"
-                                    style={{ maxWidth: '270px' }}
+                                    sx={{ maxWidth: '270px', width: 250, height: "auto" }}
                                     width="250"
                                     alt=""
                                 />
-                                <div
-                                    className="p-2 mt-auto card rounded-0"
-                                    style={{ fontSize: '0.5rem' }}
+                                <MuiBox
+                                    sx={{ p: 1, mt: "auto", bgcolor: "game.card", color: "text.primary", border: 1, borderColor: "divider", borderRadius: 0, fontSize: "0.5rem" }}
                                 >
                                     <div>{asset_obj.name}</div>
                                     <div>{asset_obj.city}, {asset_obj.state}</div>
                                     <div>By @{asset_obj.populated_user.username}</div>
-                                </div>
-                            </div>
+                                </MuiBox>
+                            </MuiBox>
                         }
                     />
                 }

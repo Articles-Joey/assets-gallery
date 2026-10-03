@@ -1,5 +1,7 @@
 "use client"
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import Box from '@mui/material/Box';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 import dynamic from 'next/dynamic'
 import ArticlesButton from '@/components/UI/Button';
@@ -17,7 +19,7 @@ import GameMenu from '@articles-media/articles-dev-box/GameMenu';
 import LeftPanelContent from '@/components/UI/LeftPanelContent';
 import classNames from 'classnames';
 import CameraZoomIndicator from '@/components/UI/CameraZoomIndicator';
-import { set } from 'date-fns';
+
 import { useSocketStore } from '@/hooks/useSocketStore';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
@@ -90,7 +92,8 @@ export default function AssetsMuseumGamePage({
 
     return (
 
-        <div
+        <Box
+            sx={{ position: "relative", display: "flex" }}
             className={classNames(
                 `${process.env.NEXT_PUBLIC_GAME_KEY}-page`,
                 (_hasHydrated ?
@@ -121,12 +124,13 @@ export default function AssetsMuseumGamePage({
                             <ArticlesButton
                                 // active={useStore.getState().menuOpen}
                                 variant="danger"
+                                aria-label="API connection information"
                                 onClick={() => {
                                     // alert("The local API server is not running. The gallery is using a fallback remote API.")
                                     setShowApiInfoModal(true)
                                 }}
                             >
-                                <i className="fad fa-exclamation-triangle me-0"></i>
+                                <WarningAmberIcon fontSize="small" />
                             </ArticlesButton>
                         }
                     </>,
@@ -136,85 +140,23 @@ export default function AssetsMuseumGamePage({
                 }}
             />
 
-            {/* <div className="menu-bar">
+            <Box className="canvas-wrap" sx={{
+                position: "relative",
+                width: "100vw",
+                height: "100vh",
+                "& canvas": { position: "absolute", width: "100%", height: "100%", left: 0, top: 0 },
+            }}>
 
-                <small className='location me-3'>
-                    <span>X: {position[0].toFixed(2)}</span>
-                    <span> - </span>
-                    <span>Y: {position[1].toFixed(2)}</span>
-                    <span> - </span>
-                    <span>Z: {position[2].toFixed(2)}</span>
-                </small>
-
-                {controlType === 'Touch' && <div className="jump">
-                    <button
-                        className="btn btn-dark"
-                        onTouchStart={(e) => { e.preventDefault(); doJump(); }}
-                        onClick={() => {
-                            useAssetGalleryStore.getState().requestJump();
-                        }}
-                    >
-                        Jump
-                    </button>
-                </div>}
-
-                <ArticlesButton
-                    active={menuOpen}
-                    onClick={() => {
-                        setMenuOpen(!menuOpen)
-                    }}
-                >
-                    <i className='fad fa-plus me-2'></i>
-                    Menu
-                </ArticlesButton>
-
-                <ArticlesButton
-                    active={showSettingsModal}
-                    onClick={() => {
-                        setShowSettingsModal(true)
-                    }}
-                >
-                    <i className='fad fa-cog'></i>
-                </ArticlesButton>
-
-                {(useFallback || devFailed) &&
-                    <ArticlesButton
-                        active={menuOpen}
-                        variant="danger"
-                        onClick={() => {
-                            alert("The local API server is not running. The gallery is using a fallback remote API.")
-                        }}
-                    >
-                        <i className="fad fa-exclamation-triangle me-0"></i>
-                    </ArticlesButton>
-                }
-
-            </div> */}
-
-            {/* <div
-                style={{ zIndex: 2 }}
-            >
-                <Menu
-                    {...{
-                        menuOpen,
-                        reloadScene,
-                        lastAssetUpdate,
-                    }}
-                />
-            </div> */}
-
-            <div className='canvas-wrap'>
-
-                <div className='absolute centered cursor noselect'>+</div>
+                <Box sx={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)", zIndex: 2, userSelect: "none", pointerEvents: "none" }}>+</Box>
                 <CameraZoomIndicator />
 
                 <GameCanvas
                     key={sceneKey}
                 />
 
-            </div>
+            </Box>
 
-        </div>
+        </Box>
     );
 }
 
@@ -223,12 +165,13 @@ function PlayerPosition() {
     const position = useAssetGalleryStore((state) => state.position);
 
     return (
-        <small className='location px-1' style={{ minWidth: "180px" }}>
+        <Box component="small" sx={{ px: 0.5, minWidth: "180px" }}>
             <span>X: {position[0].toFixed(2)}</span>
             <span> - </span>
             <span>Y: {position[1].toFixed(2)}</span>
             <span> - </span>
             <span>Z: {position[2].toFixed(2)}</span>
-        </small>
+        </Box>
     )
 }
+

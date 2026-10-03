@@ -7,6 +7,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { useStore } from "@/hooks/useStore";
 import { useAudioStore } from "@/hooks/useAudioStore";
 import { useTouchControlsStore } from "@/hooks/useTouchControlsStore";
+import ApiInfoModal from "@/components/UI/ApiInfoModal";
 
 import DarkModeHandler from "@articles-media/articles-dev-box/DarkModeHandler";
 import GlobalBody from '@articles-media/articles-dev-box/GlobalBody';
@@ -17,6 +18,8 @@ import HotkeyHandler from "@articles-media/articles-dev-box/HotkeyHandler";
 export default function LayoutClient({ children }) {
 
     const darkMode = useStore(state => state.darkMode);
+    const showApiInfoModal = useStore(state => state.showApiInfoModal);
+    const setShowApiInfoModal = useStore(state => state.setShowApiInfoModal);
 
     return (
         <>
@@ -28,6 +31,7 @@ export default function LayoutClient({ children }) {
                 useStore={useStore}
             />
             <Suspense>
+                {showApiInfoModal && <ApiInfoModal show={showApiInfoModal} setShow={setShowApiInfoModal} />}
 
                 <HotkeyHandler
                     useStore={useStore}
