@@ -1,7 +1,9 @@
 import { useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 import { Box3, Vector3 } from "three";
 import { ModelParkBench } from "../Models/ParkBench";
+import MuseumBenchColliders from "./MuseumBenchColliders";
 
 const BENCH_SCALE = 1.15;
 const placements = new WeakMap();
@@ -161,27 +163,40 @@ export function getMuseumBenchPlacement(scene) {
     return placement;
 }
 
-export default function MuseumBenchPair(props) {
-    const { scene } = useGLTF("/models/lowpoly_park_bench.glb");
+export default function MuseumBenchPair({
+    position = [0, 0, 0],
+    scale = [1, 1, 1],
+}) {
+    const { scene } = useGLTF(
+        getAssetSource("models/lowpoly_park_bench-transformed.glb"),
+    );
     const placement = useMemo(() => getMuseumBenchPlacement(scene), [scene]);
 
     return (
-        <group
-            {...props}
-            name="museum-back-to-back-benches"
-        >
-            <group position={placement.center}>
-                <ModelParkBench
-                    position={placement.first}
-                    rotation={[0, placement.firstRotation, 0]}
-                    scale={BENCH_SCALE}
-                />
-                <ModelParkBench
-                    position={placement.second}
-                    rotation={[0, placement.secondRotation, 0]}
-                    scale={BENCH_SCALE}
-                />
+        <>
+            <MuseumBenchColliders
+                placement={placement}
+                position={position}
+                scale={scale}
+            />
+            <group
+                position={position}
+                scale={scale}
+                name="museum-back-to-back-benches"
+            >
+                <group position={placement.center}>
+                    <ModelParkBench
+                        position={placement.first}
+                        rotation={[0, placement.firstRotation, 0]}
+                        scale={BENCH_SCALE}
+                    />
+                    <ModelParkBench
+                        position={placement.second}
+                        rotation={[0, placement.secondRotation, 0]}
+                        scale={BENCH_SCALE}
+                    />
+                </group>
             </group>
-        </group>
+        </>
     );
 }

@@ -8,7 +8,7 @@ import {
 } from "./sceneLayout";
 import { getMuseumRoofLayout } from "./museumRoofLayout";
 import MuseumEndWalls from "./MuseumEndWalls";
-import MuseumBenchColliders from "./MuseumBenchColliders";
+import MuseumBenchPair from "./MuseumBenchPair";
 import MuseumExteriorSidewalks from "./MuseumExteriorSidewalks";
 
 function StaticBounds({ position, size, rotation = [0, 0, 0] }) {
@@ -49,10 +49,20 @@ export default function MuseumPhysics() {
                 count={count}
                 section_spacing={section_spacing}
             />
-            <MuseumBenchColliders
-                count={count}
-                section_spacing={section_spacing}
-            />
+            {Array.from({ length: Math.floor(count / 2) }, (_, index) => {
+                const section = index * 2 + 1;
+                return (
+                    <MuseumBenchPair
+                        key={section}
+                        position={[
+                            originX + 0.25 * CORRIDOR_WIDTH_SCALE,
+                            originY + floorY,
+                            -section * section_spacing + section_spacing / 3,
+                        ]}
+                        scale={[CORRIDOR_WIDTH_SCALE, 1, 1]}
+                    />
+                );
+            })}
             <MuseumExteriorSidewalks
                 count={count}
                 section_spacing={section_spacing}

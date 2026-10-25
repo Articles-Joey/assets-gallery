@@ -8,9 +8,12 @@ Title: Lowpoly Park Bench - Game Asset
 
 import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
+
+const BENCH_MODEL = getAssetSource("models/lowpoly_park_bench-transformed.glb");
 
 export function ModelParkBench(props) {
-    const { nodes, materials } = useGLTF("/models/lowpoly_park_bench.glb");
+    const { nodes, materials } = useGLTF(BENCH_MODEL);
     return (
         <group
             {...props}
@@ -31,4 +34,4 @@ export function ModelParkBench(props) {
     );
 }
 
-useGLTF.preload("/models/lowpoly_park_bench.glb");
+useGLTF.preload(BENCH_MODEL);

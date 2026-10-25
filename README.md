@@ -26,6 +26,7 @@ Going to add websocket multiplayer to allow others to see where other people are
 ![Preview](public/img/previews/forest.webp)
 ![Preview](public/img/previews/alley.webp)
 ![Preview](public/img/previews/museum.webp)
+![Preview](public/img/previews/dark.webp)
 
 ## Attributions
 

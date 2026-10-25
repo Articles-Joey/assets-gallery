@@ -168,6 +168,20 @@ function AssetSectionModelAsset({ asset_obj }) {
     );
 }
 
+function getForestTreeVariation(assetId, side, row, salt = "") {
+    const seed = `${assetId}:${side}:${row}${salt}`;
+    let hash = 2166136261;
+    for (let i = 0; i < seed.length; i++) {
+        hash = Math.imul(hash ^ seed.charCodeAt(i), 16777619);
+    }
+    return (hash >>> 0) / 4294967295;
+}
+
+function getForestTreeScale(baseScale, assetId, side, row) {
+    // Stable +/-10% variation avoids changing sizes on re-render or theme switch.
+    return baseScale * (0.9 + getForestTreeVariation(assetId, side, row) * 0.2);
+}
+
 export default function AssetSections() {
     const assets = useStore((state) => state.assets);
     const galleryTheme = useAssetGalleryStore((state) => state.galleryTheme);
@@ -208,7 +222,8 @@ export default function AssetSections() {
                         [-1, 1].map((side) => (
                             <group key={side}>
                                 <Tree
-                                    scale={0.2}
+                                    scale={getForestTreeScale(0.2, asset_obj._id, side, 0)}
+                                    rotation={[0, getForestTreeVariation(asset_obj._id, side, 0, ":rotation") * Math.PI * 2, 0]}
                                     position={[
                                         side * 4 * CORRIDOR_WIDTH_SCALE,
                                         -1,
@@ -216,7 +231,8 @@ export default function AssetSections() {
                                     ]}
                                 />
                                 <Tree
-                                    scale={0.4}
+                                    scale={getForestTreeScale(0.4, asset_obj._id, side, 1)}
+                                    rotation={[0, getForestTreeVariation(asset_obj._id, side, 1, ":rotation") * Math.PI * 2, 0]}
                                     position={[
                                         side * 6 * CORRIDOR_WIDTH_SCALE,
                                         -1,

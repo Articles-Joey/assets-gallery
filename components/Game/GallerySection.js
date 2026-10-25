@@ -1,5 +1,6 @@
 import { memo, useEffect, useMemo } from "react";
 import { useTexture } from "@react-three/drei";
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 import {
     DoubleSide,
     NearestFilter,
@@ -7,7 +8,6 @@ import {
     SRGBColorSpace,
 } from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import MuseumBenchPair from "./MuseumBenchPair";
 import {
     MUSEUM_LAYOUT,
     section_spacing as defaultSectionSpacing,
@@ -94,7 +94,7 @@ function GallerySection({
     const glassDepth = (section_spacing - solidDepth) / 2;
     const glassCenter = section_spacing / 2 - glassDepth / 2;
     const wallCenterY = (FLOOR_Y + CEILING_Y) / 2;
-    const sourceTexture = useTexture("/img/plazz_tile.png");
+    const sourceTexture = useTexture(getAssetSource("textures/plazz_tile.png"));
     const floorTexture = useMemo(() => {
         const texture = sourceTexture.clone();
         texture.magFilter = NearestFilter;
@@ -143,9 +143,6 @@ function GallerySection({
                 section_i={section_i}
                 section_spacing={section_spacing}
             />
-            {section_i % 2 !== 0 && (
-                <MuseumBenchPair position={[0, FLOOR_Y, section_spacing / 3]} />
-            )}
             <mesh
                 rotation={[-Math.PI / 2, 0, 0]}
                 position={[0, FLOOR_Y, 0]}

@@ -8,8 +8,9 @@ import React, { memo, useEffect } from "react";
 import { useGraph } from "@react-three/fiber";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
-const link = `models/Spacesuit-transformed.glb`;
+const link = getAssetSource("models/Spacesuit-transformed.glb");
 
 function SpacesuitModel(props) {
     const { action, speed = 1 } = props;

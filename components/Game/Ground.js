@@ -4,6 +4,7 @@ import { usePlane } from "@react-three/cannon";
 import { useLoader } from "@react-three/fiber";
 
 import { PlaneGeometry, TextureLoader, RepeatWrapping } from "three";
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 import { useAssetGalleryStore } from "@/hooks/useAssetGalleryStore";
 import { useStore } from "@/hooks/useStore";
 import GrassArea from "./GrassArea";
@@ -49,24 +50,46 @@ const Ground = () => {
         position: [0, -1, 0],
     }));
 
-    const [baseColor, normal, roughness, ao, metallic] = useLoader(
+    const [
+        baseColor,
+        normal,
+        // roughness,
+        // ao,
+        // metallic
+    ] = useLoader(
         TextureLoader,
         [
-            "/textures/grass/Poliigon_GrassPatchyGround_4585_BaseColor.jpg",
-            "/textures/grass/Poliigon_GrassPatchyGround_4585_Normal.png",
-            "/textures/grass/Poliigon_GrassPatchyGround_4585_Roughness.jpg",
-            "/textures/grass/Poliigon_GrassPatchyGround_4585_AmbientOcclusion.jpg",
-            "/textures/grass/Poliigon_GrassPatchyGround_4585_Metallic.jpg",
+            getAssetSource(
+                "textures/grass/Poliigon_GrassPatchyGround_4585_BaseColor.webp",
+            ),
+            getAssetSource(
+                "textures/grass/Poliigon_GrassPatchyGround_4585_Normal.webp",
+            ),
+            // "/textures/grass/Poliigon_GrassPatchyGround_4585_Roughness.jpg",
+            // "/textures/grass/Poliigon_GrassPatchyGround_4585_AmbientOcclusion.jpg",
+            // "/textures/grass/Poliigon_GrassPatchyGround_4585_Metallic.jpg",
         ],
     );
 
     useMemo(() => {
-        [baseColor, normal, roughness, ao, metallic].forEach((texture) => {
+        [
+            baseColor,
+            normal,
+            // roughness,
+            // ao,
+            // metallic
+        ].forEach((texture) => {
             texture.wrapS = RepeatWrapping;
             texture.wrapT = RepeatWrapping;
             texture.repeat.set(100, 100);
         });
-    }, [baseColor, normal, roughness, ao, metallic]);
+    }, [
+        baseColor, 
+        normal, 
+        // roughness, 
+        // ao, 
+        // metallic
+    ]);
 
     return (
         <>
@@ -103,9 +126,9 @@ const Ground = () => {
                     attach="material"
                     map={baseColor}
                     normalMap={normal}
-                    roughnessMap={roughness}
-                    aoMap={ao}
-                    metalnessMap={metallic}
+                    // roughnessMap={roughness}
+                    // aoMap={ao}
+                    // metalnessMap={metallic}
                     aoMapIntensity={1}
                 />
             </mesh>
