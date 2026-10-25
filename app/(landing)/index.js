@@ -29,21 +29,41 @@ const ReturnToLauncherButton = dynamic(
     () => import("@articles-media/articles-dev-box/ReturnToLauncherButton"),
     { ssr: false },
 );
-const Ad = dynamic(() => import("@articles-media/articles-dev-box/Ad"), { ssr: false });
+const Ad = dynamic(() => import("@articles-media/articles-dev-box/Ad"), {
+    ssr: false,
+});
 
 export const locations = [
-    { name: "Forest", thumb: `${process.env.NEXT_PUBLIC_CDN}games/Assets Gallery/Forest.png` },
-    { name: "Alley", thumb: `${process.env.NEXT_PUBLIC_CDN}games/Assets Gallery/Alley.png` },
-    { name: "Museum", thumb: `${process.env.NEXT_PUBLIC_CDN}games/Assets Gallery/asset-gallery.jpg` },
+    {
+        name: "Forest",
+        thumb: `${process.env.NEXT_PUBLIC_CDN}games/Assets Gallery/Forest.png`,
+    },
+    {
+        name: "Alley",
+        thumb: `${process.env.NEXT_PUBLIC_CDN}games/Assets Gallery/Alley.png`,
+    },
+    {
+        name: "Museum",
+        thumb: `${process.env.NEXT_PUBLIC_CDN}games/Assets Gallery/asset-gallery.jpg`,
+    },
 ];
 
 function FlatBackground({ galleryTheme, sx }) {
     return (
         <Box
             component="img"
-            src={locations.find((location) => location.name === galleryTheme)?.thumb}
+            src={
+                locations.find((location) => location.name === galleryTheme)
+                    ?.thumb
+            }
             alt=""
-            sx={{ display: "block", width: "100%", height: "100%", objectFit: "cover", ...sx }}
+            sx={{
+                display: "block",
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                ...sx,
+            }}
         />
     );
 }
@@ -51,7 +71,11 @@ function FlatBackground({ galleryTheme, sx }) {
 function GalleryFilter({ label, value, onChange, options }) {
     return (
         <FormControl size="small">
-            <Typography component="label" htmlFor={label === "Authors" ? "author-filter" : "type-filter"} variant="caption">
+            <Typography
+                component="label"
+                htmlFor={label === "Authors" ? "author-filter" : "type-filter"}
+                variant="caption"
+            >
                 {label}
             </Typography>
             <Select
@@ -59,11 +83,22 @@ function GalleryFilter({ label, value, onChange, options }) {
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
                 disabled
-                startAdornment={<InputAdornment position="start"><FilterAltIcon fontSize="small" /></InputAdornment>}
+                startAdornment={
+                    <InputAdornment position="start">
+                        <FilterAltIcon fontSize="small" />
+                    </InputAdornment>
+                }
                 inputProps={{ "aria-label": label }}
                 sx={{ fontSize: "0.875rem" }}
             >
-                {options.map((option) => <MenuItem key={option} value={option}>{option}</MenuItem>)}
+                {options.map((option) => (
+                    <MenuItem
+                        key={option}
+                        value={option}
+                    >
+                        {option}
+                    </MenuItem>
+                ))}
             </Select>
         </FormControl>
     );
@@ -78,7 +113,9 @@ export default function AssetsMuseumLobbyPage() {
     const [authorFilter, setAuthorFilter] = useState("Anyone");
     const [typeFilter, setTypeFilter] = useState("Anything");
     const { data: userToken } = useUserToken(process.env.NEXT_PUBLIC_GAME_PORT);
-    const { data: userDetails, isLoading: userDetailsLoading } = useUserDetails({ token: userToken });
+    const { data: userDetails, isLoading: userDetailsLoading } = useUserDetails(
+        { token: userToken },
+    );
 
     useEffect(() => {
         if (!socket?.connected) return;
@@ -88,60 +125,157 @@ export default function AssetsMuseumLobbyPage() {
     }, [socket, connected]);
 
     return (
-        <Box sx={{
-            minHeight: "100vh",
-            position: "relative",
-            isolation: "isolate",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            "& .ad-wrap": {
-                position: "absolute",
-                right: "1rem",
-                top: "50%",
-                transform: "translateY(-50%)",
-                display: "none",
-                "@media (min-width: 992px)": { display: "block" },
-            },
-        }}>
-            <Box sx={{ position: "fixed", inset: 0, zIndex: -1, overflow: "hidden" }}>
+        <Box
+            sx={{
+                minHeight: "100vh",
+                position: "relative",
+                isolation: "isolate",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                "& .ad-wrap": {
+                    position: "absolute",
+                    right: "1rem",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    display: "none",
+                    "@media (min-width: 992px)": { display: "block" },
+                },
+            }}
+        >
+            <Box
+                sx={{
+                    position: "fixed",
+                    inset: 0,
+                    zIndex: -1,
+                    overflow: "hidden",
+                }}
+            >
                 <FlatBackground
                     galleryTheme={galleryTheme}
-                    sx={{ filter: darkMode === false ? "blur(3px)" : "blur(3px) brightness(0.5)", transform: "scale(1.2)" }}
+                    sx={{
+                        filter:
+                            darkMode === false
+                                ? "blur(3px)"
+                                : "blur(3px) brightness(0.5)",
+                        transform: "scale(1.2)",
+                    }}
                 />
             </Box>
-            <Box sx={{ width: "100%", maxWidth: 1320, px: 1.5, py: 2, display: "flex", justifyContent: "center" }}>
-                <Box sx={{ width: "24rem", maxWidth: "100%", position: "relative" }}>
+            <Box
+                sx={{
+                    width: "100%",
+                    maxWidth: 1320,
+                    px: 1.5,
+                    py: 2,
+                    display: "flex",
+                    justifyContent: "center",
+                }}
+            >
+                <Box
+                    sx={{
+                        width: "24rem",
+                        maxWidth: "100%",
+                        position: "relative",
+                    }}
+                >
                     <Box sx={{ textAlign: "center", mb: 2 }}>
-                        <Box component="img" src={logo.src} alt="Game Logo" sx={{ mb: 1, height: 150, objectFit: "contain", width: "100%" }} />
-                        <Typography component="h1" sx={{ mb: 0, fontSize: "2.5rem", fontWeight: 500, lineHeight: 1.2 }}>Assets Gallery</Typography>
+                        <Box
+                            component="img"
+                            src={logo.src}
+                            alt="Game Logo"
+                            sx={{
+                                mb: 1,
+                                height: 150,
+                                objectFit: "contain",
+                                width: "100%",
+                            }}
+                        />
+                        <Typography
+                            component="h1"
+                            sx={{
+                                mb: 0,
+                                fontSize: "2.5rem",
+                                fontWeight: 500,
+                                lineHeight: 1.2,
+                            }}
+                        >
+                            Assets Gallery
+                        </Typography>
                     </Box>
-                    <Card sx={{ bgcolor: "game.card", backgroundImage: "none", fontSize: "0.875rem", mb: 3, overflow: "visible", border: 1, borderColor: "divider" }}>
-                        <Box sx={{ p: 1, borderBottom: 1, borderColor: "divider" }}>
+                    <Card
+                        sx={{
+                            bgcolor: "game.card",
+                            backgroundImage: "none",
+                            fontSize: "0.875rem",
+                            mb: 3,
+                            overflow: "visible",
+                            border: 1,
+                            borderColor: "divider",
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                p: 1,
+                                borderBottom: 1,
+                                borderColor: "divider",
+                            }}
+                        >
                             <NicknameInput useStore={useStore} />
                         </Box>
                         <CardContent sx={{ p: 1, "&:last-child": { pb: 1 } }}>
                             <ScenePicker />
-                            <Box sx={{ bgcolor: "#000", p: 0.5, mb: 2, fontWeight: 700, color: connected ? "success.light" : "warning.light" }}>
+                            <Box
+                                sx={{
+                                    bgcolor: "#000",
+                                    p: 0.5,
+                                    mb: 2,
+                                    fontWeight: 700,
+                                    color: connected
+                                        ? "success.light"
+                                        : "warning.light",
+                                }}
+                            >
                                 {connected
-                                    ? `Online services are available. ${lobbyDetails?.players?.length || 0} player(s) currently on the site.`
+                                    ? `${lobbyDetails?.players?.length || 0} player(s) currently on the site.`
                                     : "Connecting to online services..."}
                             </Box>
-                            <Box sx={{ display: "flex", gap: 1 }}>
+                            {/* <Box sx={{ display: "flex", gap: 1 }}>
                                 <GalleryFilter label="Authors" value={authorFilter} onChange={setAuthorFilter} options={["Anyone", "@Joey"]} />
                                 <GalleryFilter label="Asset Types" value={typeFilter} onChange={setTypeFilter} options={["Anything", "Images", "Videos", "Gifs", "3D Models"]} />
-                            </Box>
-                            <Divider sx={{ my: 2 }} />
-                            <ArticlesButton component={Link} href="/play" fullWidth large startIcon={<PlayArrowIcon />}>
+                            </Box> */}
+                            {/* <Divider sx={{ my: 2 }} /> */}
+                            <ArticlesButton
+                                component={Link}
+                                href="/play"
+                                fullWidth
+                                large
+                                startIcon={<PlayArrowIcon />}
+                            >
                                 Enter Asset Gallery
                             </ArticlesButton>
                         </CardContent>
-                        <Box sx={{ p: 1, borderTop: 1, borderColor: "divider", display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-                            <GameMenuPrimaryButtonGroup useStore={useStore} type="Landing" />
+                        <Box
+                            sx={{
+                                p: 1,
+                                borderTop: 1,
+                                borderColor: "divider",
+                                display: "flex",
+                                flexWrap: "wrap",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <GameMenuPrimaryButtonGroup
+                                useStore={useStore}
+                                type="Landing"
+                            />
                         </Box>
                     </Card>
                     <Box sx={{ mb: 2 }}>
-                        <SessionButton port={process.env.NEXT_PUBLIC_GAME_PORT} friendsButton />
+                        <SessionButton
+                            port={process.env.NEXT_PUBLIC_GAME_PORT}
+                            friendsButton
+                        />
                         <ReturnToLauncherButton />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -170,35 +304,72 @@ export default function AssetsMuseumLobbyPage() {
     );
 }
 
-function ScenePicker() {
+export function SceneButtons() {
     const galleryTheme = useAssetGalleryStore((state) => state.galleryTheme);
-    const setGalleryTheme = useAssetGalleryStore((state) => state.setGalleryTheme);
+    const setGalleryTheme = useAssetGalleryStore(
+        (state) => state.setGalleryTheme,
+    );
 
     return (
-        <Box sx={{
-            mb: 2,
-            bgcolor: "game.card",
-            border: 1,
-            borderColor: "divider",
-            borderRadius: 1,
-            overflow: "hidden",
-            "@media (min-width: 992px)": {
-                position: "absolute",
-                left: "calc(-220px - 1rem)",
-                width: 220,
-                top: "50%",
-                transform: "translateY(-50%)",
-            },
-        }}>
-            <Box sx={{ aspectRatio: "16 / 9", bgcolor: "#000", border: "2px solid #212529", "@media (min-width: 992px)": { borderRadius: "5px" } }}>
+        <>
+            {locations.map((location) => (
+                <ArticlesButton
+                    key={location.name}
+                    active={galleryTheme === location.name}
+                    small
+                    onClick={() => setGalleryTheme(location.name)}
+                >
+                    {location.name}
+                </ArticlesButton>
+            ))}
+        </>
+    );
+}
+
+function ScenePicker() {
+    const galleryTheme = useAssetGalleryStore((state) => state.galleryTheme);
+    const setGalleryTheme = useAssetGalleryStore(
+        (state) => state.setGalleryTheme,
+    );
+
+    return (
+        <Box
+            sx={{
+                mb: 2,
+                bgcolor: "game.card",
+                border: 1,
+                borderColor: "divider",
+                borderRadius: 1,
+                overflow: "hidden",
+                "@media (min-width: 992px)": {
+                    position: "absolute",
+                    left: "calc(-220px - 1rem)",
+                    width: 220,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                },
+            }}
+        >
+            <Box
+                sx={{
+                    aspectRatio: "16 / 9",
+                    bgcolor: "#000",
+                    border: "2px solid #212529",
+                    "@media (min-width: 992px)": { borderRadius: "5px" },
+                }}
+            >
                 <FlatBackground galleryTheme={galleryTheme} />
             </Box>
-            <Box sx={{ borderTop: 1, borderColor: "divider", display: "flex", justifyContent: "center", p: 0.5 }}>
-                {locations.map((location) => (
-                    <ArticlesButton key={location.name} active={galleryTheme === location.name} small onClick={() => setGalleryTheme(location.name)}>
-                        {location.name}
-                    </ArticlesButton>
-                ))}
+            <Box
+                sx={{
+                    borderTop: 1,
+                    borderColor: "divider",
+                    display: "flex",
+                    justifyContent: "center",
+                    p: 0.5,
+                }}
+            >
+                <SceneButtons />
             </Box>
         </Box>
     );

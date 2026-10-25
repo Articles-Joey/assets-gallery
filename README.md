@@ -9,7 +9,7 @@ Online gallery build with Three.js and React Three Fiber. View images and models
 First, run the development server:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ## Multiplayer
@@ -19,7 +19,7 @@ Going to add websocket multiplayer to allow others to see where other people are
 ## TODO
 
 - Add multiplayer socket code from articles-express
-- Fallback offline img/model toggle for educational learning, maybe even on by default and disabled via env for minimum friction when downloading project. 
+- Fallback offline img/model toggle for educational learning, maybe even on by default and disabled via env for minimum friction when downloading project.
 
 ## Attributions
 

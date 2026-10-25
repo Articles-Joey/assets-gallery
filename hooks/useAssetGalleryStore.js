@@ -1,18 +1,17 @@
-"use client"
+"use client";
 // import { create } from 'zustand'
-import { createWithEqualityFn as create } from 'zustand/traditional'
+import { createWithEqualityFn as create } from "zustand/traditional";
 // import { nanoid } from 'nanoid'
 
 // const getLocalStorage = (key) => JSON.parse(window.localStorage.getItem(key))
 // const setLocalStorage = (key, value) => window.localStorage.setItem(key, JSON.stringify(value))
 
 export const useAssetGalleryStore = create((set) => ({
-
     useFallback: false,
     setUseFallback: (newValue) => {
         set((prev) => ({
-            useFallback: newValue
-        }))
+            useFallback: newValue,
+        }));
     },
 
     // Mouse and Keyboard
@@ -20,49 +19,49 @@ export const useAssetGalleryStore = create((set) => ({
     controlType: "Mouse and Keyboard",
     setControlType: (newValue) => {
         set((prev) => ({
-            controlType: newValue
-        }))
+            controlType: newValue,
+        }));
     },
 
     galleryTheme: "Forest",
     setGalleryTheme: (newValue) => {
         set((prev) => ({
-            galleryTheme: newValue
-        }))
+            galleryTheme: newValue,
+        }));
     },
 
     music: false,
     setMusic: (newValue) => {
         set((prev) => ({
-            music: newValue
-        }))
+            music: newValue,
+        }));
     },
 
     playerRotation: false,
     setPlayerRotation: (newValue) => {
         set((prev) => ({
-            playerRotation: newValue
-        }))
+            playerRotation: newValue,
+        }));
     },
 
     multiplayer: {},
     setMultiplayer: (newValue) => {
         set((prev) => ({
-            multiplayer: newValue
-        }))
+            multiplayer: newValue,
+        }));
     },
 
     playerLocation: false,
     setPlayerLocation: (newValue) => {
         set((prev) => ({
-            playerLocation: newValue
-        }))
+            playerLocation: newValue,
+        }));
     },
 
     ref: null,
-	api: null,
+    api: null,
     position: [0, 0, 0], // Initial sphere position
-	setPlayer: (ref, api) => set({ ref, api }),
+    setPlayer: (ref, api) => set({ ref, api }),
     setPosition: (position) => set({ position }),
 
     cameraDistance: 6,
@@ -80,6 +79,6 @@ export const useAssetGalleryStore = create((set) => ({
 
     touchCameraYaw: 0,
     touchCameraPitch: -0.1,
-    setTouchCameraAngle: (yaw, pitch) => set({ touchCameraYaw: yaw, touchCameraPitch: pitch }),
-
-}))
+    setTouchCameraAngle: (yaw, pitch) =>
+        set({ touchCameraYaw: yaw, touchCameraPitch: pitch }),
+}));

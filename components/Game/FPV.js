@@ -1,9 +1,8 @@
-import { PointerLockControls } from "@react-three/drei"
-import { useThree } from "@react-three/fiber"
+import { PointerLockControls } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
 
 export const FPV = ({ location, setLocation, menuOpen }) => {
-
-    const { camera, gl } = useThree()
+    const { camera, gl } = useThree();
 
     const handleUpdate = () => {
         // Get the updated camera position
@@ -21,6 +20,5 @@ export const FPV = ({ location, setLocation, menuOpen }) => {
             minPolarAngle={0.2}
             maxPolarAngle={Math.PI - 0.2}
         />
-    )
-
-}
+    );
+};

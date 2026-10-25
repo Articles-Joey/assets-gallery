@@ -1,28 +1,28 @@
-"use client"
-import { useEffect } from 'react';
-import Box from '@mui/material/Box';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+"use client";
+import { useEffect } from "react";
+import Box from "@mui/material/Box";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
-import dynamic from 'next/dynamic'
-import ArticlesButton from '@/components/UI/Button';
+import dynamic from "next/dynamic";
+import ArticlesButton from "@/components/UI/Button";
 
 // import Menu from '@/components/Game/Menu';
 
 // import useFullscreen from '@/hooks/useFullScreen';
-import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
+import useFullscreen from "@articles-media/articles-dev-box/useFullscreen";
 
-import { useAssetGalleryStore } from '@/hooks/useAssetGalleryStore';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { useStore } from '@/hooks/useStore';
+import { useAssetGalleryStore } from "@/hooks/useAssetGalleryStore";
+import { useHotkeys } from "react-hotkeys-hook";
+import { useStore } from "@/hooks/useStore";
 
-import GameMenu from '@articles-media/articles-dev-box/GameMenu';
-import LeftPanelContent from '@/components/UI/LeftPanelContent';
-import classNames from 'classnames';
-import CameraZoomIndicator from '@/components/UI/CameraZoomIndicator';
+import GameMenu from "@articles-media/articles-dev-box/GameMenu";
+import LeftPanelContent from "@/components/UI/LeftPanelContent";
+import classNames from "classnames";
+import CameraZoomIndicator from "@/components/UI/CameraZoomIndicator";
 
-import { useSocketStore } from '@/hooks/useSocketStore';
+import { useSocketStore } from "@/hooks/useSocketStore";
 
-const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
+const GameCanvas = dynamic(() => import("@/components/Game/GameCanvas"), {
     ssr: false,
 });
 
@@ -30,33 +30,30 @@ export default function AssetsMuseumGamePage({
     assets: initialAssets,
     lastAssetUpdate,
     devFailed,
-    server
+    server,
 }) {
-    const socket = useSocketStore(state => state.socket);
-    const connected = useSocketStore(state => state.connected);
+    const socket = useSocketStore((state) => state.socket);
+    const connected = useSocketStore((state) => state.connected);
 
     const _hasHydrated = useStore((state) => state._hasHydrated);
     const assets = useStore((state) => state.assets);
     const setAssets = useStore((state) => state.setAssets);
     const setLastAssetUpdate = useStore((state) => state.setLastAssetUpdate);
-    const nickname = useStore((state) => state.nickname)
+    const nickname = useStore((state) => state.nickname);
 
     useEffect(() => {
-
         if (connected) {
             const roomName = `game:${process.env.NEXT_PUBLIC_GAME_KEY}-room-${server || 1}`;
-            socket.emit('join-room', roomName, {
+            socket.emit("join-room", roomName, {
                 game_id: server || 1,
                 nickname: nickname,
-                client_version: '1',
-
+                client_version: "1",
             });
 
             return function cleanup() {
-                socket.emit('leave-room', roomName)
+                socket.emit("leave-room", roomName);
             };
         }
-
     }, [server, connected, nickname]);
 
     useEffect(() => {
@@ -67,48 +64,44 @@ export default function AssetsMuseumGamePage({
 
     const useFallback = useAssetGalleryStore((state) => state.useFallback);
 
-    useHotkeys(['1'], () => {
-        useAssetGalleryStore.getState().setGalleryTheme("Forest")
+    useHotkeys(["1"], () => {
+        useAssetGalleryStore.getState().setGalleryTheme("Forest");
     });
 
-    useHotkeys(['2'], () => {
-        useAssetGalleryStore.getState().setGalleryTheme("Alley")
+    useHotkeys(["2"], () => {
+        useAssetGalleryStore.getState().setGalleryTheme("Alley");
     });
 
-    useHotkeys(['3'], () => {
-        useAssetGalleryStore.getState().setGalleryTheme("Museum")
+    useHotkeys(["3"], () => {
+        useAssetGalleryStore.getState().setGalleryTheme("Museum");
     });
 
     const sceneKey = useStore((state) => state.sceneKey);
 
-    useHotkeys('r', () => {
+    useHotkeys("r", () => {
         useStore.getState().reloadScene();
-    })
+    });
 
     const isFullscreen = useFullscreen().isFullscreen;
     const menuOpen = useStore((state) => state.menuOpen);
     const sidebar = useStore((state) => state.sidebar);
-    const setShowApiInfoModal = useStore((state) => state.setShowApiInfoModal)
+    const setShowApiInfoModal = useStore((state) => state.setShowApiInfoModal);
 
     return (
-
         <Box
             sx={{ position: "relative", display: "flex" }}
             className={classNames(
                 `${process.env.NEXT_PUBLIC_GAME_KEY}-page`,
-                (_hasHydrated ?
-                    {
-                        'menu-open': menuOpen,
-                        'fullscreen': isFullscreen,
-                        'show-sidebar': sidebar,
-                    }
-                    :
-                    {}
-                )
+                _hasHydrated
+                    ? {
+                          "menu-open": menuOpen,
+                          fullscreen: isFullscreen,
+                          "show-sidebar": sidebar,
+                      }
+                    : {},
             )}
             id={`${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`}
         >
-
             <GameMenu
                 useStore={useStore}
                 LeftPanelContent={LeftPanelContent}
@@ -116,62 +109,83 @@ export default function AssetsMuseumGamePage({
                     style: "Bar",
                     settingsWithMenuButton: true,
                     menuBarButtonPosition: "Center",
-                    leftSlotChildren: <>
-                        <PlayerPosition />
-                    </>,
-                    centerSlotChildren: <>
-                        {(useFallback || devFailed) &&
-                            <ArticlesButton
-                                // active={useStore.getState().menuOpen}
-                                variant="danger"
-                                aria-label="API connection information"
-                                onClick={() => {
-                                    // alert("The local API server is not running. The gallery is using a fallback remote API.")
-                                    setShowApiInfoModal(true)
-                                }}
-                            >
-                                <WarningAmberIcon fontSize="small" />
-                            </ArticlesButton>
-                        }
-                    </>,
+                    leftSlotChildren: (
+                        <>
+                            <PlayerPosition />
+                        </>
+                    ),
+                    centerSlotChildren: (
+                        <>
+                            {(useFallback || devFailed) && (
+                                <ArticlesButton
+                                    // active={useStore.getState().menuOpen}
+                                    variant="danger"
+                                    aria-label="API connection information"
+                                    onClick={() => {
+                                        // alert("The local API server is not running. The gallery is using a fallback remote API.")
+                                        setShowApiInfoModal(true);
+                                    }}
+                                >
+                                    <WarningAmberIcon fontSize="small" />
+                                </ArticlesButton>
+                            )}
+                        </>
+                    ),
                 }}
                 sidebarConfig={{
                     style: "Static Panel",
                 }}
             />
 
-            <Box className="canvas-wrap" sx={{
-                position: "relative",
-                width: "100vw",
-                height: "100vh",
-                "& canvas": { position: "absolute", width: "100%", height: "100%", left: 0, top: 0 },
-            }}>
-
-                <Box sx={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)", zIndex: 2, userSelect: "none", pointerEvents: "none" }}>+</Box>
+            <Box
+                className="canvas-wrap"
+                sx={{
+                    position: "relative",
+                    width: "100vw",
+                    height: "100vh",
+                    "& canvas": {
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        left: 0,
+                        top: 0,
+                    },
+                }}
+            >
+                <Box
+                    sx={{
+                        position: "absolute",
+                        left: "50%",
+                        top: "50%",
+                        transform: "translate(-50%, -50%)",
+                        zIndex: 2,
+                        userSelect: "none",
+                        pointerEvents: "none",
+                    }}
+                >
+                    +
+                </Box>
                 <CameraZoomIndicator />
 
-                <GameCanvas
-                    key={sceneKey}
-                />
-
+                <GameCanvas key={sceneKey} />
             </Box>
-
         </Box>
     );
 }
 
 function PlayerPosition() {
-
     const position = useAssetGalleryStore((state) => state.position);
 
     return (
-        <Box component="small" sx={{ px: 0.5, minWidth: "180px" }}>
+        <Box
+            component="small"
+            sx={{ px: 0.5, minWidth: "180px" }}
+        >
             <span>X: {position[0].toFixed(2)}</span>
             <span> - </span>
             <span>Y: {position[1].toFixed(2)}</span>
             <span> - </span>
             <span>Z: {position[2].toFixed(2)}</span>
         </Box>
-    )
+    );
 }
-

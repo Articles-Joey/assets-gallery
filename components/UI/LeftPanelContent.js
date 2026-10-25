@@ -9,6 +9,7 @@ import GameMenuPrimaryButtonGroup from "@articles-media/articles-dev-box/GameMen
 import { useStore } from "@/hooks/useStore";
 import DebugCard from "./DebugCard";
 import GameDetailsPanel from "./GameDetailsPanel";
+import { useAudioStore } from "@/hooks/useAudioStore";
 
 function LeftPanelContent() {
     const reloadScene = useStore((state) => state.reloadScene);
@@ -16,9 +17,29 @@ function LeftPanelContent() {
 
     return (
         <Box sx={{ width: "100%" }}>
-            <Card sx={{ bgcolor: "game.card", backgroundImage: "none", fontSize: "0.875rem", border: 1, borderColor: "divider" }}>
-                <CardContent sx={{ p: 1, "&:last-child": { pb: 1 }, display: "flex", flexWrap: "wrap" }}>
-                    <GameMenuPrimaryButtonGroup useStore={useStore} type="GameMenu" useRouter={useRouter} />
+            <Card
+                sx={{
+                    bgcolor: "game.card",
+                    backgroundImage: "none",
+                    fontSize: "0.875rem",
+                    border: 1,
+                    borderColor: "divider",
+                }}
+            >
+                <CardContent
+                    sx={{
+                        p: 1,
+                        "&:last-child": { pb: 1 },
+                        display: "flex",
+                        flexWrap: "wrap",
+                    }}
+                >
+                    <GameMenuPrimaryButtonGroup
+                        useStore={useStore}
+                        type="GameMenu"
+                        useRouter={useRouter}
+                        useAudioStore={useAudioStore}
+                    />
                 </CardContent>
             </Card>
             <GameDetailsPanel />

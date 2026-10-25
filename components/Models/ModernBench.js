@@ -6,33 +6,44 @@ Source: https://sketchfab.com/3d-models/modern-bench-1-caa4515e36444e4c8c1002964
 Title: Modern Bench 1
 */
 
-import React, { useRef } from 'react'
-import { useGLTF } from '@react-three/drei'
+import React, { useRef } from "react";
+import { useGLTF } from "@react-three/drei";
 
 export default function ModelModernBench(props) {
-  const { nodes, materials } = useGLTF('/models/modern-bench.glb')
-  return (
-    <group {...props} dispose={null}>
-      <group rotation={[-Math.PI / 2, 0, 0]} scale={0.01}>
-        <group rotation={[Math.PI / 2, 0, 0]}>
-          <group rotation={[-Math.PI / 2, 0, 0]} scale={100}>
-            <mesh
-              castShadow
-              receiveShadow
-              geometry={nodes.Modern_Bench_1_Stainless_Steel_0.geometry}
-              material={materials.Stainless_Steel}
-            />
-            <mesh
-              castShadow
-              receiveShadow
-              geometry={nodes.Modern_Bench_1_Wood_0.geometry}
-              material={materials.Wood}
-            />
-          </group>
+    const { nodes, materials } = useGLTF("/models/modern-bench.glb");
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <group
+                rotation={[-Math.PI / 2, 0, 0]}
+                scale={0.01}
+            >
+                <group rotation={[Math.PI / 2, 0, 0]}>
+                    <group
+                        rotation={[-Math.PI / 2, 0, 0]}
+                        scale={100}
+                    >
+                        <mesh
+                            castShadow
+                            receiveShadow
+                            geometry={
+                                nodes.Modern_Bench_1_Stainless_Steel_0.geometry
+                            }
+                            material={materials.Stainless_Steel}
+                        />
+                        <mesh
+                            castShadow
+                            receiveShadow
+                            geometry={nodes.Modern_Bench_1_Wood_0.geometry}
+                            material={materials.Wood}
+                        />
+                    </group>
+                </group>
+            </group>
         </group>
-      </group>
-    </group>
-  )
+    );
 }
 
-useGLTF.preload('/models/modern-bench.glb')
+useGLTF.preload("/models/modern-bench.glb");

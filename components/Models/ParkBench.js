@@ -6,26 +6,29 @@ Source: https://sketchfab.com/3d-models/lowpoly-park-bench-game-asset-34b84238f2
 Title: Lowpoly Park Bench - Game Asset
 */
 
-import React, { useRef } from 'react'
-import { useGLTF } from '@react-three/drei'
+import React, { useRef } from "react";
+import { useGLTF } from "@react-three/drei";
 
 export function ModelParkBench(props) {
-  const { nodes, materials } = useGLTF('/models/lowpoly_park_bench.glb')
-  return (
-    <group {...props} dispose={null}>
-      <group scale={0.01}>
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Park_Bench_Palette_0.geometry}
-          material={materials.Palette}
-          position={[-23.971, 25.88, -0.262]}
-          rotation={[0, 0, 1.739]}
-          scale={[0.05, 0.016, 0.5]}
-        />
-      </group>
-    </group>
-  )
+    const { nodes, materials } = useGLTF("/models/lowpoly_park_bench.glb");
+    return (
+        <group
+            {...props}
+            dispose={null}
+        >
+            <group scale={0.01}>
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.Park_Bench_Palette_0.geometry}
+                    material={materials.Palette}
+                    position={[-23.971, 25.88, -0.262]}
+                    rotation={[0, 0, 1.739]}
+                    scale={[0.05, 0.016, 0.5]}
+                />
+            </group>
+        </group>
+    );
 }
 
-useGLTF.preload('/models/lowpoly_park_bench.glb')
+useGLTF.preload("/models/lowpoly_park_bench.glb");

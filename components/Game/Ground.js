@@ -1,162 +1,79 @@
-import { memo, useMemo, useRef } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 
-import { usePlane } from "@react-three/cannon"
-import { useLoader, useFrame } from "@react-three/fiber"
+import { usePlane } from "@react-three/cannon";
+import { useLoader } from "@react-three/fiber";
 
-import { TextureLoader, RepeatWrapping, DoubleSide, Object3D, Color } from 'three'
+import { PlaneGeometry, TextureLoader, RepeatWrapping } from "three";
 import { useAssetGalleryStore } from "@/hooks/useAssetGalleryStore";
 import { useStore } from "@/hooks/useStore";
-
-const BLADE_WIDTH = 0.04;
-const BLADE_HEIGHT_MIN = 0.08;
-const BLADE_HEIGHT_MAX = 0.25;
-
-const QUALITY_SETTINGS = {
-    Low:    { visibleRadius: 5,  density: 0.8 },
-    Medium: { visibleRadius: 10, density: 1.0 },
-    High:   { visibleRadius: 15, density: 1.2 },
-};
-
-const GRASS_AREA = 50; // half-extent of the grass field
-const BLADE_SPACING = 0.3; // approximate spacing between blades
-
-// Pre-generate all static blade positions covering the ground
-const allBlades = (() => {
-    const data = [];
-    for (let x = -GRASS_AREA; x < GRASS_AREA; x += BLADE_SPACING) {
-        for (let z = -GRASS_AREA; z < GRASS_AREA; z += BLADE_SPACING) {
-            const jitterX = x + (Math.random() - 0.5) * BLADE_SPACING;
-            const jitterZ = z + (Math.random() - 0.5) * BLADE_SPACING;
-            const height = BLADE_HEIGHT_MIN + Math.random() * (BLADE_HEIGHT_MAX - BLADE_HEIGHT_MIN);
-            const rotY = Math.random() * Math.PI;
-            const color = new Color().setHSL(
-                0.25 + Math.random() * 0.08,
-                0.5 + Math.random() * 0.3,
-                0.25 + Math.random() * 0.15
-            );
-            data.push({ x: jitterX, z: jitterZ, height, rotY, r: color.r, g: color.g, b: color.b });
-        }
-    }
-    return data;
-})();
-
-const MAX_VISIBLE_BLADES = 60000;
-
-const GrassBlades = () => {
-
-    const meshRef = useRef();
-    const dummy = useMemo(() => new Object3D(), []);
-    const timeRef = useRef(0);
-
-    const graphicsQuality = useStore(state => state.graphicsQuality);
-    const playerPosition = useAssetGalleryStore(state => state.position);
-
-    const { visibleRadius, density } = QUALITY_SETTINGS[graphicsQuality] || QUALITY_SETTINGS.Medium;
-
-    const colorsRef = useRef(new Float32Array(MAX_VISIBLE_BLADES * 3));
-
-    useFrame((_, delta) => {
-        if (!meshRef.current) return;
-        timeRef.current += delta;
-
-        const px = playerPosition[0];
-        const pz = playerPosition[2];
-        const rSq = visibleRadius * visibleRadius;
-        const densitySq = (BLADE_SPACING / density) * (BLADE_SPACING / density);
-
-        let count = 0;
-        const cols = colorsRef.current;
-
-        for (let i = 0; i < allBlades.length && count < MAX_VISIBLE_BLADES; i++) {
-            const blade = allBlades[i];
-            const dx = blade.x - px;
-            const dz = blade.z - pz;
-            const distSq = dx * dx + dz * dz;
-
-            if (distSq > rSq) continue;
-
-            // Skip some blades at lower density
-            if (density < 1.0 && distSq > densitySq && (i & 1)) continue;
-
-            const sway = Math.sin(timeRef.current * 1.5 + blade.x * 0.5 + blade.z * 0.3) * 0.06;
-            dummy.position.set(blade.x, -1 + blade.height / 2, blade.z);
-            dummy.rotation.set(sway, blade.rotY, sway * 0.5);
-            dummy.scale.set(BLADE_WIDTH, blade.height, BLADE_WIDTH);
-            dummy.updateMatrix();
-            meshRef.current.setMatrixAt(count, dummy.matrix);
-
-            cols[count * 3] = blade.r;
-            cols[count * 3 + 1] = blade.g;
-            cols[count * 3 + 2] = blade.b;
-
-            count++;
-        }
-
-        // Hide remaining instances by scaling to zero
-        if (count < meshRef.current.count) {
-            dummy.scale.set(0, 0, 0);
-            dummy.updateMatrix();
-            for (let i = count; i < meshRef.current.count; i++) {
-                meshRef.current.setMatrixAt(i, dummy.matrix);
-            }
-        }
-
-        meshRef.current.count = count;
-        meshRef.current.instanceMatrix.needsUpdate = true;
-
-        // Update colors
-        const colorAttr = meshRef.current.geometry.getAttribute('color');
-        if (colorAttr) {
-            colorAttr.array.set(cols.subarray(0, count * 3));
-            colorAttr.needsUpdate = true;
-        }
-    });
-
-    return (
-        <instancedMesh ref={meshRef} args={[null, null, MAX_VISIBLE_BLADES]} frustumCulled={false}>
-            <planeGeometry args={[1, 1]} />
-            <meshStandardMaterial
-                side={DoubleSide}
-                vertexColors
-                alphaTest={0.5}
-            />
-            <instancedBufferAttribute attach="geometry-attributes-color" args={[colorsRef.current, 3]} />
-        </instancedMesh>
-    );
-};
+import GrassArea from "./GrassArea";
+import MuseumGrass from "./MuseumGrass";
+import {
+    CORRIDOR_WIDTH_SCALE,
+    SCENE_HALF_SIZE,
+    getMuseumSiteBounds,
+} from "./sceneLayout";
 
 const Ground = () => {
-
-    const galleryTheme = useAssetGalleryStore(state => state.galleryTheme);
-    const setTouchTarget = useAssetGalleryStore(state => state.setTouchTarget);
-    const controlType = useStore(state => state.controlType);
+    const galleryTheme = useAssetGalleryStore((state) => state.galleryTheme);
+    const setTouchTarget = useAssetGalleryStore(
+        (state) => state.setTouchTarget,
+    );
+    const controlType = useStore((state) => state.controlType);
+    const assetCount = useStore((state) => state.assets?.length ?? 0);
+    const site =
+        galleryTheme === "Museum"
+            ? getMuseumSiteBounds(assetCount)
+            : { minZ: -SCENE_HALF_SIZE, maxZ: SCENE_HALF_SIZE };
+    const { minZ, maxZ } = site;
+    const groundGeometry = useMemo(() => {
+        const geometry = new PlaneGeometry(SCENE_HALF_SIZE * 2, maxZ - minZ);
+        geometry.translate(0, -(minZ + maxZ) / 2, 0);
+        const positions = geometry.getAttribute("position");
+        const uv = geometry.getAttribute("uv");
+        for (let i = 0; i < uv.count; i++) {
+            uv.setXY(
+                i,
+                (positions.getX(i) + SCENE_HALF_SIZE) / (SCENE_HALF_SIZE * 2),
+                (positions.getY(i) + SCENE_HALF_SIZE) / (SCENE_HALF_SIZE * 2),
+            );
+        }
+        return geometry;
+    }, [minZ, maxZ]);
+    useEffect(() => () => groundGeometry.dispose(), [groundGeometry]);
     const pointerDownRef = useRef(null);
     const TAP_THRESHOLD_SQ = 100; // 10px radius
 
     const [ref] = usePlane(() => ({
-        rotation: [-Math.PI / 2, 0, 0], position: [0, -1, 0]
-    }))
+        rotation: [-Math.PI / 2, 0, 0],
+        position: [0, -1, 0],
+    }));
 
-    const [baseColor, normal, roughness, ao, metallic] = useLoader(TextureLoader, [
-        '/textures/grass/Poliigon_GrassPatchyGround_4585_BaseColor.jpg',
-        '/textures/grass/Poliigon_GrassPatchyGround_4585_Normal.png',
-        '/textures/grass/Poliigon_GrassPatchyGround_4585_Roughness.jpg',
-        '/textures/grass/Poliigon_GrassPatchyGround_4585_AmbientOcclusion.jpg',
-        '/textures/grass/Poliigon_GrassPatchyGround_4585_Metallic.jpg'
-    ])
+    const [baseColor, normal, roughness, ao, metallic] = useLoader(
+        TextureLoader,
+        [
+            "/textures/grass/Poliigon_GrassPatchyGround_4585_BaseColor.jpg",
+            "/textures/grass/Poliigon_GrassPatchyGround_4585_Normal.png",
+            "/textures/grass/Poliigon_GrassPatchyGround_4585_Roughness.jpg",
+            "/textures/grass/Poliigon_GrassPatchyGround_4585_AmbientOcclusion.jpg",
+            "/textures/grass/Poliigon_GrassPatchyGround_4585_Metallic.jpg",
+        ],
+    );
 
     useMemo(() => {
-        [baseColor, normal, roughness, ao, metallic].forEach(texture => {
-            texture.wrapS = RepeatWrapping
-            texture.wrapT = RepeatWrapping
-            texture.repeat.set(100, 100)
-        })
-    }, [baseColor, normal, roughness, ao, metallic])
+        [baseColor, normal, roughness, ao, metallic].forEach((texture) => {
+            texture.wrapS = RepeatWrapping;
+            texture.wrapT = RepeatWrapping;
+            texture.repeat.set(100, 100);
+        });
+    }, [baseColor, normal, roughness, ao, metallic]);
 
     return (
         <>
             <mesh
                 ref={ref}
+                geometry={groundGeometry}
+                receiveShadow
                 onPointerDown={(e) => {
                     if (controlType !== "Touch") return;
                     pointerDownRef.current = {
@@ -166,16 +83,22 @@ const Ground = () => {
                     };
                 }}
                 onPointerUp={(e) => {
-                    if (controlType !== "Touch" || !pointerDownRef.current) return;
-                    const dx = e.nativeEvent.clientX - pointerDownRef.current.screenX;
-                    const dy = e.nativeEvent.clientY - pointerDownRef.current.screenY;
+                    if (controlType !== "Touch" || !pointerDownRef.current)
+                        return;
+                    const dx =
+                        e.nativeEvent.clientX - pointerDownRef.current.screenX;
+                    const dy =
+                        e.nativeEvent.clientY - pointerDownRef.current.screenY;
                     if (dx * dx + dy * dy < TAP_THRESHOLD_SQ) {
-                        setTouchTarget([pointerDownRef.current.point.x, 0, pointerDownRef.current.point.z]);
+                        setTouchTarget([
+                            pointerDownRef.current.point.x,
+                            0,
+                            pointerDownRef.current.point.z,
+                        ]);
                     }
                     pointerDownRef.current = null;
                 }}
             >
-                <planeGeometry attach='geometry' args={[100, 100]} />
                 <meshStandardMaterial
                     attach="material"
                     map={baseColor}
@@ -186,10 +109,25 @@ const Ground = () => {
                     aoMapIntensity={1}
                 />
             </mesh>
-            {galleryTheme === "Forest" && <GrassBlades />}
+            {galleryTheme === "Forest" && (
+                <GrassArea
+                    outer={50}
+                    innerBounds={{
+                        minX: -1.4 * CORRIDOR_WIDTH_SCALE,
+                        maxX: 1.4 * CORRIDOR_WIDTH_SCALE,
+                        minZ: -50,
+                        maxZ: 50,
+                    }}
+                    groundHeight={-1}
+                    count={64000}
+                />
+            )}
+            {galleryTheme === "Museum" && assetCount > 0 && (
+                <MuseumGrass count={assetCount} />
+            )}
         </>
-    )
-}
+    );
+};
 
 // const arePropsEqual = (prevProps, nextProps) => {
 //     // Compare all props for equality
@@ -201,4 +139,4 @@ const MemoizedGround = memo(
     // arePropsEqual
 );
 
-export default MemoizedGround
+export default MemoizedGround;

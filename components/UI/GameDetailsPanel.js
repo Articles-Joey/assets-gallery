@@ -7,6 +7,7 @@ import Chip from "@mui/material/Chip";
 import { useSocketStore } from "@/hooks/useSocketStore";
 import { useGameStore } from "@/hooks/useGameStore";
 import { radToDeg } from "three/src/math/MathUtils.js";
+import { SceneButtons } from "@/app/(landing)";
 
 export default function GameDetailsPanel() {
     const players = useGameStore((state) => state.gameState.players);
@@ -15,6 +16,18 @@ export default function GameDetailsPanel() {
     return (
         <Card sx={{ bgcolor: "game.card", backgroundImage: "none", border: 1, borderColor: "divider" }}>
             <CardContent>
+
+                <Box
+                    sx={{
+                        width: "100%",
+                        fontSize: "1rem",
+                        mb: 2,
+                    }}
+                >
+                    <Box>Scene</Box>
+                    <SceneButtons />
+                </Box>
+
                 <Box sx={{ width: "100%", fontSize: "1rem" }}>
                     <Box>People Connected: {players?.length || 0}</Box>
                     <Box sx={{ fontSize: "0.875em" }}>{socket?.id ? `(You: ${socket.id})` : ""}</Box>

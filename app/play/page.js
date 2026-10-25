@@ -1,19 +1,19 @@
-import { Suspense } from "react"
-import { cacheLife } from "next/cache"
-import GamePage from "./play"
+import { Suspense } from "react";
+import { cacheLife } from "next/cache";
+import GamePage from "./play";
 // import metadataAppend from "util/metadataAppend"
 
 export const metadata = {
     title: `Assets Gallery`,
-}
+};
 
 async function fetchAssets() {
-    "use cache"
+    "use cache";
     cacheLife({
-        stale: 0,          // never serve stale content
-        revalidate: 3600,  // revalidate every hour
-        expire: 3600,      // expire after 1 hour
-    })
+        stale: 0, // never serve stale content
+        revalidate: 3600, // revalidate every hour
+        expire: 3600, // expire after 1 hour
+    });
 
     const devUrl = "http://localhost:3001/api/community/assets";
     const prodUrl = "https://articles.media/api/community/assets";
@@ -50,7 +50,11 @@ async function fetchAssets() {
 }
 
 async function GamePageContent() {
-    const { data: assets, fetchedAt: lastAssetUpdate, devFailed } = await fetchAssets();
+    const {
+        data: assets,
+        fetchedAt: lastAssetUpdate,
+        devFailed,
+    } = await fetchAssets();
 
     return (
         <GamePage
@@ -58,7 +62,7 @@ async function GamePageContent() {
             lastAssetUpdate={lastAssetUpdate}
             devFailed={devFailed}
         />
-    )
+    );
 }
 
 export default function Page() {
@@ -66,5 +70,5 @@ export default function Page() {
         <Suspense fallback={<div>Loading...</div>}>
             <GamePageContent />
         </Suspense>
-    )
+    );
 }

@@ -1,73 +1,70 @@
 // import { create } from 'zustand'
-import { createWithEqualityFn as create } from 'zustand/traditional'
+import { createWithEqualityFn as create } from "zustand/traditional";
 
 export const useGameStore = create((set) => ({
-
-    cameraMode: 'Player',
+    cameraMode: "Player",
     setCameraMode: (newValue) => {
         set((prev) => ({
-            cameraMode: newValue
-        }))
+            cameraMode: newValue,
+        }));
     },
 
     playerLocation: false,
     setPlayerLocation: (newValue) => {
         set((prev) => ({
-            playerLocation: newValue
-        }))
+            playerLocation: newValue,
+        }));
     },
 
     maxHeight: 0,
     setMaxHeight: (newValue) => {
         set((prev) => ({
-            maxHeight: newValue
-        }))
+            maxHeight: newValue,
+        }));
     },
 
     shift: false,
     setShift: (newValue) => {
         set((prev) => ({
-            shift: newValue
-        }))
+            shift: newValue,
+        }));
     },
 
     touchControls: {
         jump: false,
         left: false,
-        right: false
+        right: false,
     },
     setTouchControls: (newValue) => {
         set((prev) => ({
-            touchControls: newValue
-        }))
+            touchControls: newValue,
+        }));
     },
 
     teleport: false,
     setTeleport: (newValue) => {
         set((prev) => ({
-            teleport: newValue
-        }))
+            teleport: newValue,
+        }));
     },
 
     gameState: {},
     setGameState: (newValue) => {
         set((prev) => ({
-            gameState: newValue
-        }))
+            gameState: newValue,
+        }));
     },
-}))
+}));
 
 export const useControlsStore = create((set) => ({
-
     touchControls: {
         jump: false,
         left: false,
-        right: false
+        right: false,
     },
     setTouchControls: (newValue) => {
         set((prev) => ({
-            touchControls: newValue
-        }))
-    }
-
-}))
+            touchControls: newValue,
+        }));
+    },
+}));

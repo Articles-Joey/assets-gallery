@@ -1,9 +1,8 @@
-"use client"
+"use client";
 import { useStore } from "@/hooks/useStore";
 import { useEffect } from "react";
 
 export default function HasNoMouseHandler({ children }) {
-
     const hasHydrated = useStore((state) => state._hasHydrated);
 
     const hasNoMouse = useStore((state) => state.hasNoMouse);
@@ -14,8 +13,7 @@ export default function HasNoMouseHandler({ children }) {
     // Set value for controlType based on hasNoMouse, also will handle showing first load controlType modal when done
 
     useEffect(() => {
-
-        return
+        return;
 
         if (!hasHydrated) return;
 
@@ -24,11 +22,7 @@ export default function HasNoMouseHandler({ children }) {
             setHasNoMouse(!hasMouse);
             setHasNoMouseCheck(true);
         }
-
     }, [hasHydrated, hasNoMouseCheck, setHasNoMouse, setHasNoMouseCheck]);
 
-    return (
-        <>
-        </>
-    );
+    return <></>;
 }
