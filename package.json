@@ -4,7 +4,7 @@
     "version": "0.10.0",
     "private": false,
     "homepage": "https://assets-gallery.articles.media",
-    "packageManager": "pnpm@12.0.0",
+    "packageManager": "pnpm@12.15.0",
     "scripts": {
         "dev": "next dev -p 3033",
         "build": "next build",
