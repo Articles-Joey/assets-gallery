@@ -25,6 +25,7 @@ import NicknameInput from "@articles-media/articles-dev-box/NicknameInput";
 import useUserDetails from "@articles-media/articles-dev-box/useUserDetails";
 import useUserToken from "@articles-media/articles-dev-box/useUserToken";
 import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
+import { useAudioStore } from "@/hooks/useAudioStore";
 
 const ReturnToLauncherButton = dynamic(
     () => import("@articles-media/articles-dev-box/ReturnToLauncherButton"),
@@ -269,6 +270,7 @@ export default function AssetsMuseumLobbyPage() {
                             <GameMenuPrimaryButtonGroup
                                 useStore={useStore}
                                 type="Landing"
+                                useAudioStore={useAudioStore}
                             />
                         </Box>
                     </Card>

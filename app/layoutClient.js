@@ -102,8 +102,8 @@ export default function LayoutClient({ children }) {
                     }}
                     infoModalConfig={{
                         previewImage: darkMode
-                            ? "img/game-preview.gif"
-                            : "img/game-preview.gif",
+                            ? "img/previews/game-preview.gif"
+                            : "img/previews/game-preview.gif",
                     }}
                 />
             </Suspense>
