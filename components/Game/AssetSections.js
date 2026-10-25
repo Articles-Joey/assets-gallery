@@ -222,8 +222,24 @@ export default function AssetSections() {
                         [-1, 1].map((side) => (
                             <group key={side}>
                                 <Tree
-                                    scale={getForestTreeScale(0.2, asset_obj._id, side, 0)}
-                                    rotation={[0, getForestTreeVariation(asset_obj._id, side, 0, ":rotation") * Math.PI * 2, 0]}
+                                    scale={getForestTreeScale(
+                                        0.2,
+                                        asset_obj._id,
+                                        side,
+                                        0,
+                                    )}
+                                    rotation={[
+                                        0,
+                                        getForestTreeVariation(
+                                            asset_obj._id,
+                                            side,
+                                            0,
+                                            ":rotation",
+                                        ) *
+                                            Math.PI *
+                                            2,
+                                        0,
+                                    ]}
                                     position={[
                                         side * 4 * CORRIDOR_WIDTH_SCALE,
                                         -1,
@@ -231,8 +247,24 @@ export default function AssetSections() {
                                     ]}
                                 />
                                 <Tree
-                                    scale={getForestTreeScale(0.4, asset_obj._id, side, 1)}
-                                    rotation={[0, getForestTreeVariation(asset_obj._id, side, 1, ":rotation") * Math.PI * 2, 0]}
+                                    scale={getForestTreeScale(
+                                        0.4,
+                                        asset_obj._id,
+                                        side,
+                                        1,
+                                    )}
+                                    rotation={[
+                                        0,
+                                        getForestTreeVariation(
+                                            asset_obj._id,
+                                            side,
+                                            1,
+                                            ":rotation",
+                                        ) *
+                                            Math.PI *
+                                            2,
+                                        0,
+                                    ]}
                                     position={[
                                         side * 6 * CORRIDOR_WIDTH_SCALE,
                                         -1,

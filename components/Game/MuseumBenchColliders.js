@@ -36,12 +36,14 @@ export default function MuseumBenchColliders({ placement, position, scale }) {
                         position[0] +
                             (placement.center[0] +
                                 bench.position[0] +
-                                sign * part.center[0]) * scale[0],
+                                sign * part.center[0]) *
+                                scale[0],
                         position[1] + part.center[1] * scale[1],
                         position[2] +
                             (placement.center[2] +
                                 bench.position[2] +
-                                sign * part.center[2]) * scale[2],
+                                sign * part.center[2]) *
+                                scale[2],
                     ],
                     size: [
                         part.size[0] * scale[0],

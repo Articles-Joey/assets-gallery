@@ -56,20 +56,17 @@ const Ground = () => {
         // roughness,
         // ao,
         // metallic
-    ] = useLoader(
-        TextureLoader,
-        [
-            getAssetSource(
-                "textures/grass/Poliigon_GrassPatchyGround_4585_BaseColor.webp",
-            ),
-            getAssetSource(
-                "textures/grass/Poliigon_GrassPatchyGround_4585_Normal.webp",
-            ),
-            // "/textures/grass/Poliigon_GrassPatchyGround_4585_Roughness.jpg",
-            // "/textures/grass/Poliigon_GrassPatchyGround_4585_AmbientOcclusion.jpg",
-            // "/textures/grass/Poliigon_GrassPatchyGround_4585_Metallic.jpg",
-        ],
-    );
+    ] = useLoader(TextureLoader, [
+        getAssetSource(
+            "textures/grass/Poliigon_GrassPatchyGround_4585_BaseColor.webp",
+        ),
+        getAssetSource(
+            "textures/grass/Poliigon_GrassPatchyGround_4585_Normal.webp",
+        ),
+        // "/textures/grass/Poliigon_GrassPatchyGround_4585_Roughness.jpg",
+        // "/textures/grass/Poliigon_GrassPatchyGround_4585_AmbientOcclusion.jpg",
+        // "/textures/grass/Poliigon_GrassPatchyGround_4585_Metallic.jpg",
+    ]);
 
     useMemo(() => {
         [
@@ -84,10 +81,10 @@ const Ground = () => {
             texture.repeat.set(100, 100);
         });
     }, [
-        baseColor, 
-        normal, 
-        // roughness, 
-        // ao, 
+        baseColor,
+        normal,
+        // roughness,
+        // ao,
         // metallic
     ]);
 

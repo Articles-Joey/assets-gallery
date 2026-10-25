@@ -92,8 +92,17 @@ function EndWall({ halfWidth, thickness, roof }) {
                 <Geometry>
                     <Base geometry={geometry} />
                     {[-1, 1].map((side) => (
-                        <Subtraction key={`side-window-${side}`} position={[side * sideWindowX, sideWindowY, 0]}>
-                            <boxGeometry args={[sideWindowWidth, sideWindowHeight, thickness * 4]} />
+                        <Subtraction
+                            key={`side-window-${side}`}
+                            position={[side * sideWindowX, sideWindowY, 0]}
+                        >
+                            <boxGeometry
+                                args={[
+                                    sideWindowWidth,
+                                    sideWindowHeight,
+                                    thickness * 4,
+                                ]}
+                            />
                         </Subtraction>
                     ))}
                     <Subtraction
