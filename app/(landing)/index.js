@@ -24,6 +24,7 @@ import GameMenuPrimaryButtonGroup from "@articles-media/articles-dev-box/GameMen
 import NicknameInput from "@articles-media/articles-dev-box/NicknameInput";
 import useUserDetails from "@articles-media/articles-dev-box/useUserDetails";
 import useUserToken from "@articles-media/articles-dev-box/useUserToken";
+import getAssetSource from "@articles-media/articles-dev-box/getAssetSource";
 
 const ReturnToLauncherButton = dynamic(
     () => import("@articles-media/articles-dev-box/ReturnToLauncherButton"),
@@ -36,15 +37,15 @@ const Ad = dynamic(() => import("@articles-media/articles-dev-box/Ad"), {
 export const locations = [
     {
         name: "Forest",
-        thumb: `${process.env.NEXT_PUBLIC_CDN}games/Assets Gallery/Forest.png`,
+        thumb: getAssetSource(`img/previews/forest.webp`),
     },
     {
         name: "Alley",
-        thumb: `${process.env.NEXT_PUBLIC_CDN}games/Assets Gallery/Alley.png`,
+        thumb: getAssetSource(`img/previews/alley.webp`),
     },
     {
         name: "Museum",
-        thumb: `${process.env.NEXT_PUBLIC_CDN}games/Assets Gallery/asset-gallery.jpg`,
+        thumb: getAssetSource(`img/previews/museum.webp`),
     },
 ];
 

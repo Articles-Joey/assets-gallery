@@ -21,6 +21,12 @@ Going to add websocket multiplayer to allow others to see where other people are
 - Add multiplayer socket code from articles-express
 - Fallback offline img/model toggle for educational learning, maybe even on by default and disabled via env for minimum friction when downloading project.
 
+## Previews
+
+![Preview](public/img/previews/forest.webp)
+![Preview](public/img/previews/alley.webp)
+![Preview](public/img/previews/museum.webp)
+
 ## Attributions
 
 [Easel Icon - Flaticon](https://www.flaticon.com/free-icon/easel_2784489)  

@@ -6,6 +6,7 @@ import { CORRIDOR_WIDTH_SCALE, MUSEUM_LAYOUT } from "./sceneLayout";
 import { getMuseumRoofLayout } from "./museumRoofLayout";
 import { getMuseumBrickMaps, projectMuseumBrickUVs } from "./museumMaterials";
 import { createTimberGeometry, getKioskWoodMaps } from "./kioskWood";
+import MuseumFourPaneWindow from "./MuseumFourPaneWindow";
 import MuseumDoor, {
     DOOR_BOTTOM_GAP,
     DOOR_SIDE_GAP,
@@ -67,6 +68,12 @@ function EndWall({ halfWidth, thickness, roof }) {
     const sideLength = halfWidth - doorWidth / 2;
     const leafWidth = doorWidth - DOOR_SIDE_GAP * 2;
     const leafHeight = doorHeight - 0.035;
+    const sideWindowOuterX = halfWidth - 0.6;
+    const sideWindowInnerX = doorWidth / 2 + leafWidth + 0.2;
+    const sideWindowWidth = Math.min(3.6, sideWindowOuterX - sideWindowInnerX);
+    const sideWindowX = sideWindowOuterX - sideWindowWidth / 2;
+    const sideWindowHeight = 1.1;
+    const sideWindowY = floorY + 1.4;
     const hingeX = -doorWidth / 2 + DOOR_SIDE_GAP;
     const hingeZ = thickness / 2 + 0.075;
     const rakeLength = halfWidth / Math.cos(roof.angle);
@@ -84,6 +91,11 @@ function EndWall({ halfWidth, thickness, roof }) {
             >
                 <Geometry>
                     <Base geometry={geometry} />
+                    {[-1, 1].map((side) => (
+                        <Subtraction key={`side-window-${side}`} position={[side * sideWindowX, sideWindowY, 0]}>
+                            <boxGeometry args={[sideWindowWidth, sideWindowHeight, thickness * 4]} />
+                        </Subtraction>
+                    ))}
                     <Subtraction
                         position={[0, floorY + doorHeight / 2 - 0.01, 0]}
                     >
@@ -112,6 +124,15 @@ function EndWall({ halfWidth, thickness, roof }) {
                     bumpScale={0.018}
                 />
             </mesh>
+            {[-1, 1].map((side) => (
+                <MuseumFourPaneWindow
+                    key={`four-pane-${side}`}
+                    position={[side * sideWindowX, sideWindowY, 0]}
+                    width={sideWindowWidth}
+                    height={sideWindowHeight}
+                    wallThickness={thickness}
+                />
+            ))}
             <mesh
                 position={[0, roundWindowY, 0]}
                 rotation={[Math.PI / 2, 0, 0]}
